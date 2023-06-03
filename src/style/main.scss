@@ -1,5 +1,7 @@
-@import "./normalize.css";
-@import "./variables.scss";
+@import './normalize.css';
+@import './variables.scss';
+
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Pacifico&display=swap');
 
 *,
 *::before,
@@ -11,6 +13,9 @@
   box-sizing: border-box;
   font-weight: normal;
   -webkit-tap-highlight-color: transparent;
+
+  outline-color: $light;
+  outline-offset: 0.3rem;
 }
 
 // Remove ugly style for links
@@ -27,6 +32,10 @@ textarea {
   font-size: inherit;
   font-weight: inherit;
   color: inherit;
+
+  &::placeholder {
+    color: inherit;
+  }
 }
 
 button,
@@ -43,7 +52,7 @@ input[type='button'] {
 }
 
 body {
-  font-family: 'Josefin Sans', 'Source Sans Pro', Helvetica, Arial, sans-serif;
+  font-family: Cairo, 'Josefin Sans', 'Source Sans Pro', Helvetica, Arial, sans-serif;
 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -52,7 +61,8 @@ body {
 
   min-height: 100vh;
 
-  color: var(--tx-gray-dark);
+  color: $text;
+  background-color: $background;
 }
 
 // Use flexbox always
@@ -62,10 +72,7 @@ section,
 header,
 footer,
 form,
-button,
-p,
-span,
-label {
+button {
   display: flex;
   align-items: flex-start;
 }
