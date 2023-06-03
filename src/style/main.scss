@@ -1,0 +1,71 @@
+@import "./normalize.css";
+@import "./variables.scss";
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  border: none;
+
+  box-sizing: border-box;
+  font-weight: normal;
+  -webkit-tap-highlight-color: transparent;
+}
+
+// Remove ugly style for links
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+// Stuff that should look like everything else but doesn't
+button,
+input,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+button,
+a,
+input[type='submit'],
+input[type='button'] {
+  cursor: pointer;
+}
+
+//=== Global style
+
+:root {
+  font-size: 18px;
+}
+
+body {
+  font-family: 'Josefin Sans', 'Source Sans Pro', Helvetica, Arial, sans-serif;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  text-align: center;
+
+  min-height: 100vh;
+
+  color: var(--tx-gray-dark);
+}
+
+// Use flexbox always
+div,
+main,
+section,
+header,
+footer,
+form,
+button,
+p,
+span,
+label {
+  display: flex;
+  align-items: flex-start;
+}
