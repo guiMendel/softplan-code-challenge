@@ -16,8 +16,8 @@ describe('Login', () => {
     expect(wrapper.find('#email').exists()).toBeTruthy()
     expect(wrapper.find('#password').exists()).toBeTruthy()
 
-    expect(wrapper.find('#log-in').exists()).toBeTruthy()
-    expect(wrapper.find('#sign-up').exists()).toBeTruthy()
+    expect(wrapper.find('#login').exists()).toBeTruthy()
+    expect(wrapper.find('#signup').exists()).toBeTruthy()
     expect(wrapper.find('#forgot-password').exists()).toBeTruthy()
   })
 })

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import InputField from '@/components/InputField.vue'
-import { useNotificationsStore } from '@/stores/notifications'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-const { notify } = useNotificationsStore()
+// Login fields
 
 const email = ref({
   value: '',
@@ -18,6 +18,7 @@ const password = ref({
     newValue.length >= 8 ? true : 'Password needs at least 8 characters'
 })
 
+// Login action
 const login = () => {
   // notify('error', 'Invalid email')
 }
@@ -25,7 +26,7 @@ const login = () => {
 
 <template>
   <main>
-    <form class="log-in">
+    <form class="login">
       <!-- Title -->
       <h1>share md</h1>
 
@@ -36,12 +37,12 @@ const login = () => {
       <button
         @click.prevent="login"
         :class="(email.valid == false || password.valid == false) && 'disabled'"
-        id="log-in"
+        id="login"
       >
         Log In
       </button>
 
-      <p>First time? <a href="#" id="sign-up">Create an account.</a></p>
+      <p>First time? <router-link :to="{name: 'signup'}">Create an account.</router-link></p>
     </form>
   </main>
 </template>
