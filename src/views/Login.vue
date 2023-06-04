@@ -1,14 +1,25 @@
 <script setup lang="ts">
+import InputField from '@/components/InputField.vue'
 import { useNotificationsStore } from '@/stores/notifications'
 import { ref } from 'vue'
 
 const { notify } = useNotificationsStore()
 
-const email = ref('')
-const password = ref('')
+const email = ref({
+  value: '',
+  valid: false,
+  validate: (newValue: string) => (/.+@.+/.test(newValue) ? true : 'Invalid email')
+})
+
+const password = ref({
+  value: '',
+  valid: false,
+  validate: (newValue: string) =>
+    newValue.length >= 8 ? true : 'Password needs at least 8 characters'
+})
 
 const login = () => {
-  notify('error', 'Invalid email')
+  // notify('error', 'Invalid email')
 }
 </script>
 
@@ -18,11 +29,17 @@ const login = () => {
       <!-- Title -->
       <h1>share md</h1>
 
-      <input type="text" id="email" placeholder="email" v-model="email" />
-      <input type="password" id="password" placeholder="password" v-model="password" />
+      <InputField name="email" v-model="email" />
+      <InputField type="password" name="password" v-model="password" />
 
       <p id="forgot-password">Forgot your password?</p>
-      <button @click.prevent="login" id="log-in">Log In</button>
+      <button
+        @click.prevent="login"
+        :class="(email.valid == false || password.valid == false) && 'disabled'"
+        id="log-in"
+      >
+        Log In
+      </button>
 
       <p>First time? <a href="#" id="sign-up">Create an account.</a></p>
     </form>
@@ -45,24 +62,11 @@ main {
     flex-direction: column;
     gap: 1rem;
 
+    max-width: 80%;
+
     h1 {
       font-family: Pacifico, display;
       font-size: 2.5rem;
-    }
-
-    input {
-      border-bottom: 2px solid $text;
-      background: none;
-      font-weight: 600;
-      cursor: pointer;
-
-      width: 15rem;
-
-      padding: 0.3rem 0;
-
-      &::placeholder {
-        opacity: 0.4;
-      }
     }
 
     p#forgot-password {
@@ -104,6 +108,15 @@ main {
         filter: brightness(0.8);
         translate: 0 0.2rem;
         box-shadow: none;
+      }
+
+      &.disabled {
+        filter: saturate(0.9);
+        translate: 0;
+        box-shadow: none;
+        color: $main;
+
+        cursor: default;
       }
     }
 
