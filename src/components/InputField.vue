@@ -41,14 +41,23 @@ if (props.modelValue.valid != validationResult.value)
     ...props.modelValue,
     valid: validationResult.value === true
   })
+
+// Splits camelCase text
+const splitCamelCase = (text: string) => text.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase()
 </script>
 
 <template>
   <div class="input-field" :class="errorMessage != '' && 'error'" @focusout="showErrors = true">
     <label v-if="name != ''" :class="modelValue.value != '' && 'raised'" :for="name">{{
-      name
+      splitCamelCase(name)
     }}</label>
-    <input :id="name" v-bind="$attrs" :value="modelValue.value" @input="handleInput" />
+    <input
+      :type="name.toLowerCase().includes('password') ? 'password' : 'text'"
+      :id="name"
+      v-bind="$attrs"
+      :value="modelValue.value"
+      @input="handleInput"
+    />
     <small class="error">{{ validationResult }}</small>
   </div>
 </template>
@@ -83,7 +92,7 @@ if (props.modelValue.valid != validationResult.value)
     font-weight: 600;
     cursor: pointer;
 
-    width: 15rem;
+    width: 14rem;
 
     padding: 0.3rem 0;
 

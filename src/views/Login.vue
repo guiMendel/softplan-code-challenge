@@ -42,7 +42,9 @@ const login = () => {
         Log In
       </button>
 
-      <p>First time? <router-link :to="{name: 'signup'}">Create an account.</router-link></p>
+      <p id="signup">
+        First time? <RouterLink :to="{ name: 'signup' }">Create an account.</RouterLink>
+      </p>
     </form>
   </main>
 </template>
@@ -65,11 +67,6 @@ main {
 
     max-width: 80%;
 
-    h1 {
-      font-family: Pacifico, display;
-      font-size: 2.5rem;
-    }
-
     p#forgot-password {
       opacity: 0.6;
       font-weight: 600;
@@ -81,56 +78,6 @@ main {
 
       &:hover {
         opacity: 1;
-      }
-    }
-
-    button {
-      padding: 0.5rem 1rem;
-      background: $strong;
-      border: none;
-      border-radius: $border-radius;
-
-      // min-width: 5rem;
-      width: 100%;
-      text-align: center;
-      align-items: center;
-      justify-content: center;
-
-      font-weight: 700;
-
-      transition: all 100ms;
-      box-shadow: 0 0.1rem 1px 1px $bad;
-
-      &:hover {
-        filter: brightness(1.1);
-      }
-
-      &:active {
-        filter: brightness(0.8);
-        translate: 0 0.2rem;
-        box-shadow: none;
-      }
-
-      &.disabled {
-        filter: saturate(0.9);
-        translate: 0;
-        box-shadow: none;
-        color: $main;
-
-        cursor: default;
-      }
-    }
-
-    a {
-      color: $bad;
-      font-weight: 700;
-
-      background-color: $transparent;
-
-      transition: background-color 100ms;
-
-      &:hover {
-        background-color: $strong;
       }
     }
   }
