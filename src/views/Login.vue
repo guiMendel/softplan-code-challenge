@@ -2,6 +2,7 @@
 import { auth } from '@/api/firebase'
 import InputField from '@/components/InputField.vue'
 import { useNotificationsStore } from '@/stores/notifications'
+import { useUserStore } from '@/stores/user'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -39,15 +40,16 @@ const formIsValid = computed(() => email.value.valid && password.value.valid)
 const router = useRouter()
 
 const { notify } = useNotificationsStore()
+const { login } = useUserStore()
 
 // Login action
-const login = () => {
+const tryLogin = () => {
   if (formIsValid.value == false) return
 
   const emailValue = email.value.value
 
   // Create the user
-  signInWithEmailAndPassword(auth, emailValue, password.value.value)
+  login(emailValue, password.value.value)
     // Redirect to home
     .then(() => router.push({ name: 'home' }))
     // Handle errors
@@ -82,7 +84,7 @@ const login = () => {
       <InputField type="password" name="password" v-model="password" />
 
       <p id="forgot-password">Forgot your password?</p>
-      <button @click.prevent="login" :class="formIsValid == false && 'disabled'" id="login">
+      <button @click.prevent="tryLogin" :class="formIsValid == false && 'disabled'" id="login">
         Log In
       </button>
 

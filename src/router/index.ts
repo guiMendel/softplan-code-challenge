@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Signup from '../views/Signup.vue'
+import User from '../views/User.vue'
 import { navigationGuard } from './navigationGuard'
 
 const router = createRouter({
@@ -24,6 +25,13 @@ const router = createRouter({
       name: 'signup',
       component: Signup,
       meta: { requiresNoAuth: true }
+    },
+    {
+      path: '/user/:userId',
+      name: 'user',
+      component: User,
+      props: true,
+      meta: { requiresAuth: true }
     }
   ]
 })

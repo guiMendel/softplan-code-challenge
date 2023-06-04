@@ -32,7 +32,7 @@ describe('Notification Store', () => {
 
     const newTimeout = 10
 
-    notificationStore.setTimeout(newTimeout)
+    notificationStore.alterTimeout(newTimeout)
 
     notificationStore.notify('error', 'test notification')
 

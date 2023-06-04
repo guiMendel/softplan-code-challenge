@@ -4,9 +4,9 @@ import { computed } from 'vue'
 
 const props = defineProps<{ user: User }>()
 
-// Get initials from nickname
+// Get initials from name
 const initials = computed(() =>
-  props.user.nickname
+  props.user.name
     .split(' ')
     .slice(0, 2)
     .map((name) => name.charAt(0).toUpperCase())

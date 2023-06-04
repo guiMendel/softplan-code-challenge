@@ -2,32 +2,70 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { User } from '@/types/User.interface'
 import { auth, db } from '@/api/firebase'
-import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile
+} from 'firebase/auth'
 
 export const useUserStore = defineStore('user', () => {
-  const user = ref<User | null>(null)
+  // ==================
+  // === CURRENT USER
+  // ==================
+
+  // The user instance
+  const currentUser = ref<User | null>(null)
+
+  // Get reference to a user's doc
+  const getDocRef = (uid: string) => doc(db, 'users', uid)
 
   // Keep logged user synced
   auth.onAuthStateChanged(async (newUser) => {
     if (newUser == null) {
-      user.value = null
+      currentUser.value = null
       return
     }
 
+    currentUser.value = await getUser(newUser.uid)
+  })
+
+  // Log in to a user
+  const login = (email: string, password: string) =>
+    signInWithEmailAndPassword(auth, email, password)
+
+  // Create a new user
+  const signup = (email: string, password: string, name: string) =>
+    // Create the user
+    createUserWithEmailAndPassword(auth, email, password).then(({ user }) => {
+      // Set its name
+      updateProfile(user, { displayName: name })
+
+      // Set its database entry
+      setDoc(getDocRef(user.uid), { name, email })
+
+      return user
+    })
+
+  // ==================
+  // === GENERAL USERS
+  // ==================
+
+  // Get a user
+  const getUser = async (uid: string) => {
     // Get the user's database data
-    const docRef = doc(db, 'users', newUser.uid)
-    const userData = await getDoc(docRef).then(document => document.data())
+    const userData = await getDoc(getDocRef(uid)).then((document) => document.data())
 
     console.log('User data:', userData)
 
-    user.value = {
-      nickname: newUser.displayName ?? 'user',
-      email: newUser.email ?? '',
-      uid: newUser.uid,
+    return {
+      uid: uid,
+      name: userData!.name,
+      email: userData!.email,
       about: userData?.about,
       admin: userData?.admin
     }
-  })
+  }
 
-  return { user }
+  return { currentUser, login, signup, getUser }
 })

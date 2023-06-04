@@ -16,7 +16,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
   // Create new notification
   const notify = (type: Notification['type'], message: Notification['message']) => {
     console.log(notifications.value)
-    
+
     const id = idGenerator.value++
 
     const notification = {
@@ -49,5 +49,5 @@ export const useNotificationsStore = defineStore('notifications', () => {
 
   const alterTimeout = (newTimeout: number) => (timeout.value = newTimeout)
 
-  return { notifications, notify, erase, timeout, setTimeout: alterTimeout }
+  return { notifications, notify, erase, timeout, alterTimeout }
 })

@@ -6,10 +6,10 @@ import { storeToRefs } from 'pinia'
 import { useUserStore } from './stores/user'
 import { watch } from 'vue'
 
-const { user } = storeToRefs(useUserStore())
+const { currentUser } = storeToRefs(useUserStore())
 const router = useRouter()
 
-watch(user, (newUser) => {
+watch(currentUser, (newUser) => {
   // When user is signed out and route requires authentication, redirect to login
   if (newUser == null && router.currentRoute.value.meta.requiresAuth) {
     router.push({ name: 'login' })

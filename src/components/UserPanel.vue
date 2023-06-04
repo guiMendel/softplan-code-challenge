@@ -2,26 +2,39 @@
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import UserProfilePicture from './UserProfilePicture.vue'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 
-const { user } = storeToRefs(useUserStore())
+const { currentUser } = storeToRefs(useUserStore())
+
+const route = useRoute()
+
+const isUserPage = computed(() => route.name == 'user')
 </script>
 
 <template>
-  <div v-if="user != null" id="user-panel">
-    <!-- Show nickname -->
+  <RouterLink
+    :to="{ name: 'user', params: { userId: currentUser.uid } }"
+    v-if="currentUser != null && isUserPage == false"
+    id="user-panel"
+  >
+    <!-- Show name -->
     <span
-      >hi, <span class="nickname">{{ user.nickname }}</span></span
+      >hi, <span class="name">{{ currentUser.name }}</span></span
     >
 
     <!-- Show picture -->
-    <UserProfilePicture class="picture" :user="user" />
-  </div>
+    <UserProfilePicture class="picture" :user="currentUser" />
+  </RouterLink>
 </template>
 
 <style lang="scss">
 @import '../style/variables.scss';
 
 #user-panel {
+  display: flex;
+  color: inherit;
+
   position: fixed;
 
   top: -1rem;
@@ -48,7 +61,7 @@ const { user } = storeToRefs(useUserStore())
   filter: brightness(1);
 
   > span {
-    .nickname {
+    .name {
       font-weight: 700;
     }
   }
