@@ -5,4 +5,8 @@ export const navigationGuard: NavigationGuardWithThis<undefined> = (to, from) =>
   if (to.meta.requiresAuth && auth.currentUser == null) {
     return { name: 'login' }
   }
+
+  if (to.meta.requiresNoAuth && auth.currentUser != null) {
+    return { name: 'home' }
+  }
 }

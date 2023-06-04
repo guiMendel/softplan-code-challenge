@@ -1,21 +1,35 @@
 <script setup lang="ts">
 import { RouterView, useRouter } from 'vue-router'
 import Notifications from './components/Notifications.vue'
-import { auth } from './api/firebase'
+import UserPanel from './components/UserPanel.vue'
+import { storeToRefs } from 'pinia'
+import { useUserStore } from './stores/user'
+import { watch } from 'vue'
 
+const { user } = storeToRefs(useUserStore())
 const router = useRouter()
 
-auth.onAuthStateChanged((newUser) => {
+watch(user, (newUser) => {
   // When user is signed out and route requires authentication, redirect to login
   if (newUser == null && router.currentRoute.value.meta.requiresAuth) {
     router.push({ name: 'login' })
+  }
+
+  // When user is signed in and route requires no authentication, redirect to home
+  if (newUser != null && router.currentRoute.value.meta.requiresNoAuth) {
+    router.push({ name: 'home' })
   }
 })
 </script>
 
 <template>
+  <!-- Notification floating list -->
   <Notifications />
 
+  <!-- Floating user panel -->
+  <UserPanel />
+
+  <!-- Page view -->
   <RouterView />
 </template>
 

@@ -17,11 +17,13 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: Login,
+      meta: { requiresNoAuth: true }
     },
     {
       path: '/signup',
       name: 'signup',
       component: Signup,
+      meta: { requiresNoAuth: true }
     }
   ]
 })
