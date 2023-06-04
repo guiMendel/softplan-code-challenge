@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { auth } from '@/api/firebase'
 import InputField from '@/components/InputField.vue'
+import { useNotificationsStore } from '@/stores/notifications'
 import { createUserWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'firebase/auth'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -64,7 +65,12 @@ const formIsValid = computed(
 
 const router = useRouter()
 
+const { notify } = useNotificationsStore()
+
 const submit = () => {
+  notify('error', 'Email already in use')
+  return
+
   if (formIsValid.value == false) return
 
   const emailValue = email.value.value
@@ -82,8 +88,14 @@ const submit = () => {
     .catch(({ code, message }) => {
       console.log('Signup failed! ' + message)
 
-      if (code === 'auth/invalid-email') invalidEmails.value.push(emailValue)
-      if (code === 'auth/email-already-in-use') emailsInUse.value.push(emailValue)
+      if (code === 'auth/invalid-email') {
+        invalidEmails.value.push(emailValue)
+        notify('error', 'Invalid email')
+      }
+      if (code === 'auth/email-already-in-use') {
+        emailsInUse.value.push(emailValue)
+        notify('error', 'Email already in use')
+      }
     })
 }
 </script>
