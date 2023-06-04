@@ -2,6 +2,10 @@
 import InputField from '@/components/InputField.vue'
 import { computed, ref } from 'vue'
 
+// ========================
+// ==== FORM
+// ========================
+
 // Fields
 const nickname = ref({
   value: '',
@@ -38,6 +42,12 @@ const formIsValid = computed(
     newPassword.value.valid &&
     passwordConfirmation.value.valid
 )
+
+// ========================
+// ==== SUBMISSION
+// ========================
+
+
 </script>
 
 <template>
