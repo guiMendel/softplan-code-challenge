@@ -24,14 +24,14 @@ const router = createRouter({
       path: '/signup',
       name: 'signup',
       component: Signup,
-      meta: { requiresNoAuth: true }
+      meta: { requiresNoAuth: true, hasBackButton: true }
     },
     {
       path: '/user/:userId',
       name: 'user',
       component: User,
       props: true,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, hasBackButton: true }
     }
   ]
 })

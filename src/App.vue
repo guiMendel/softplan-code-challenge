@@ -2,12 +2,17 @@
 import { RouterView, useRouter } from 'vue-router'
 import Notifications from './components/Notifications.vue'
 import UserPanel from './components/UserPanel.vue'
+import BackButton from './components/BackButton.vue'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from './stores/user'
-import { watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const { currentUser } = storeToRefs(useUserStore())
 const router = useRouter()
+
+// ===================================================
+// === REACTING TO AUTHENTICATION CHANGES
+// ===================================================
 
 watch(currentUser, (newUser) => {
   // When user is signed out and route requires authentication, redirect to login
@@ -20,6 +25,13 @@ watch(currentUser, (newUser) => {
     router.push({ name: 'home' })
   }
 })
+
+// ===================================================
+// === BACK BUTTON
+// ===================================================
+
+// Whether back button should appear
+const shouldHaveBackButton = computed(() => router.currentRoute.value.meta.hasBackButton)
 </script>
 
 <template>
@@ -28,6 +40,9 @@ watch(currentUser, (newUser) => {
 
   <!-- Floating user panel -->
   <UserPanel />
+
+  <!-- Floating back button -->
+  <BackButton v-if="shouldHaveBackButton" />
 
   <!-- Page view -->
   <RouterView />
