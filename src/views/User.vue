@@ -25,13 +25,73 @@ fetchUser()
   <main v-if="user != null">
     <header>
       <!-- Picture -->
-      <UserProfilePicture :user="user" />
+      <div class="picture">
+        <UserProfilePicture :user="user" />
+      </div>
 
       <!-- Name -->
-      <span>{{ user.name }}</span>
+      <h1>{{ user.name }}</h1>
     </header>
 
+    <!-- Join date -->
+    <div class="join-date">
+      <p>
+        Joined
+        {{
+          user.createdAt.toLocaleString('default', {
+            year: 'numeric',
+            day: 'numeric',
+            month: 'long'
+          })
+        }}
+      </p>
+    </div>
+
     <!-- About -->
-    <p v-if="user.about != undefined">{{ user.about }}</p>
+    <div v-if="user.about != undefined" class="about">
+      <small>about</small>
+      <p>{{ user.about }}</p>
+    </div>
   </main>
 </template>
+
+<style scoped lang="scss">
+@import '../style/variables.scss';
+
+main {
+  width: 100%;
+  height: 100vh;
+
+  flex-direction: column;
+  align-items: center;
+
+  gap: 2rem;
+
+  header {
+    width: 100%;
+    padding: 5rem 1rem 2rem;
+
+    background-color: $light;
+
+    gap: 1rem;
+    align-items: flex-end;
+    justify-content: center;
+
+    h1 {
+      font-size: 2rem;
+      overflow-wrap: break-word;
+
+      line-height: 2.8rem;
+    }
+
+    .picture {
+      font-size: 2.5rem;
+    }
+  }
+
+  .join-date {
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+}
+</style>

@@ -3,6 +3,8 @@ export interface User {
   uid: string
   email: string
 
+  createdAt: Date
+
   about?: string
   admin?: boolean
 }

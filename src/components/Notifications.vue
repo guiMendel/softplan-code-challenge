@@ -47,7 +47,7 @@ onBeforeUnmount(() => clearInterval(countdown))
   </div>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 @import '../style/variables.scss';
 
 #notifications {

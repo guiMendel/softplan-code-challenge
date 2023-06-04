@@ -8,7 +8,7 @@ const router = useRouter()
   <font-awesome-icon id="back-button" :icon="['fas', 'backward']" @click="router.back()" />
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 #back-button {
   position: fixed;
 

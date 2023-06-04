@@ -20,7 +20,7 @@ const initials = computed(() =>
   </div>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 @import '../style/variables.scss';
 
 .portrait {
@@ -34,7 +34,7 @@ const initials = computed(() =>
   justify-content: center;
 
   .initials {
-    font-weight: 700;
+    font-family: Pacifico, monospace;
   }
 
   aspect-ratio: 1/1;

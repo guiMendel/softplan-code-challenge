@@ -28,7 +28,7 @@ const isUserPage = computed(() => route.name == 'user')
   </RouterLink>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 @import '../style/variables.scss';
 
 #user-panel {

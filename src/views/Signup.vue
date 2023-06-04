@@ -115,7 +115,7 @@ const submit = () => {
   </main>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 main {
   @import '../style/variables.scss';
 

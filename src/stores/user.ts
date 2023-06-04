@@ -42,7 +42,7 @@ export const useUserStore = defineStore('user', () => {
       updateProfile(user, { displayName: name })
 
       // Set its database entry
-      setDoc(getDocRef(user.uid), { name, email })
+      setDoc(getDocRef(user.uid), { name, email, createdAt: new Date().toJSON() })
 
       return user
     })
@@ -56,14 +56,17 @@ export const useUserStore = defineStore('user', () => {
     // Get the user's database data
     const userData = await getDoc(getDocRef(uid)).then((document) => document.data())
 
+    if (userData == null) return null
+
     console.log('User data:', userData)
 
     return {
       uid: uid,
-      name: userData!.name,
-      email: userData!.email,
-      about: userData?.about,
-      admin: userData?.admin
+      name: userData.name,
+      email: userData.email,
+      createdAt: new Date(userData.createdAt),
+      about: userData.about,
+      admin: userData.admin
     }
   }
 
