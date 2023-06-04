@@ -11,6 +11,37 @@ import {
 
 export const useUserStore = defineStore('user', () => {
   // ==================
+  // === GENERAL USERS
+  // ==================
+
+  // Get a user
+  const getUser = async (uid: string): Promise<User | null> => {
+    // Get the user's database data
+    const userData = await getDoc(getDocRef(uid)).then((document) => document.data())
+
+    if (userData == null) return null
+
+    console.log('User data:', userData)
+
+    return {
+      uid: uid,
+      name: userData.name,
+      email: userData.email,
+      createdAt: new Date(userData.createdAt),
+      about: userData.about,
+      admin: userData.admin
+    }
+  }
+
+  // Update a user
+  const updateUser = (uid: string, newData: Partial<User>) => {
+    // Handle email change
+    if (newData.email != undefined) {
+      // auth.
+    }
+  }
+
+  // ==================
   // === CURRENT USER
   // ==================
 
@@ -46,29 +77,6 @@ export const useUserStore = defineStore('user', () => {
 
       return user
     })
-
-  // ==================
-  // === GENERAL USERS
-  // ==================
-
-  // Get a user
-  const getUser = async (uid: string) => {
-    // Get the user's database data
-    const userData = await getDoc(getDocRef(uid)).then((document) => document.data())
-
-    if (userData == null) return null
-
-    console.log('User data:', userData)
-
-    return {
-      uid: uid,
-      name: userData.name,
-      email: userData.email,
-      createdAt: new Date(userData.createdAt),
-      about: userData.about,
-      admin: userData.admin
-    }
-  }
 
   return { currentUser, login, signup, getUser }
 })

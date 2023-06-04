@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { auth } from '@/api/firebase'
 import InputField from '@/components/InputField.vue'
+import { useUserField } from '@/modules/useUserField'
 import { useNotificationsStore } from '@/stores/notifications'
 import { useUserStore } from '@/stores/user'
 import { createUserWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'firebase/auth'
@@ -11,44 +12,8 @@ import { useRouter } from 'vue-router'
 // ==== FORM
 // ========================
 
-// Emails already in use
-const emailsInUse = ref<string[]>([])
-
-// Invalid emails already in use
-const invalidEmails = ref<string[]>([])
-
 // Fields
-const name = ref({
-  value: '',
-  valid: false,
-  validate: (newValue: string) => (newValue.length >= 3 ? true : 'Name needs at least 3 characters')
-})
-
-const email = ref({
-  value: '',
-  valid: false,
-  validate: (newValue: string) => {
-    if (/.+@.+\..+/.test(newValue) == false) return 'Invalid email'
-    if (invalidEmails.value.includes(newValue)) return 'Invalid email'
-    if (emailsInUse.value.includes(newValue)) return 'Email already in use'
-
-    return true
-  }
-})
-
-const newPassword = ref({
-  value: '',
-  valid: false,
-  validate: (newValue: string) =>
-    newValue.length >= 8 ? true : 'Password needs at least 8 characters'
-})
-
-const passwordConfirmation = ref({
-  value: '',
-  valid: false,
-  validate: (newValue: string) =>
-    newValue == newPassword.value.value ? true : "Doesn't match password"
-})
+const { name, email, invalidateEmail, password: newPassword, passwordConfirmation } = useUserField()
 
 // Form validation
 const formIsValid = computed(
@@ -82,12 +47,10 @@ const submit = () => {
       console.log('Signup failed! ' + message)
 
       if (code === 'auth/invalid-email') {
-        invalidEmails.value.push(emailValue)
-        notify('error', 'Invalid email')
+        notify('error', invalidateEmail(emailValue, 'invalid'))
       }
       if (code === 'auth/email-already-in-use') {
-        emailsInUse.value.push(emailValue)
-        notify('error', 'Email already in use')
+        notify('error', invalidateEmail(emailValue, 'inUse'))
       }
     })
 }

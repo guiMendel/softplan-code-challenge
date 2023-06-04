@@ -1,38 +1,13 @@
 <script setup lang="ts">
-import { auth } from '@/api/firebase'
 import InputField from '@/components/InputField.vue'
+import { useUserField } from '@/modules/useUserField'
 import { useNotificationsStore } from '@/stores/notifications'
 import { useUserStore } from '@/stores/user'
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 // Login fields
-
-// Invalid emails already in use
-const invalidEmails = ref<string[]>([])
-
-// Inexistent users
-const inexistentUsers = ref<string[]>([])
-
-const email = ref({
-  value: '',
-  valid: false,
-  validate: (newValue: string) => {
-    if (/.+@.+\..+/.test(newValue) == false) return 'Invalid email'
-    if (invalidEmails.value.includes(newValue)) return 'Invalid email'
-    if (inexistentUsers.value.includes(newValue)) return 'Email not registered'
-
-    return true
-  }
-})
-
-const password = ref({
-  value: '',
-  valid: false,
-  validate: (newValue: string) =>
-    newValue.length >= 8 ? true : 'Password needs at least 8 characters'
-})
+const { email, password, invalidateEmail } = useUserField()
 
 // Form validation
 const formIsValid = computed(() => email.value.valid && password.value.valid)
@@ -57,15 +32,13 @@ const tryLogin = () => {
       console.log('Login failed! ' + message)
 
       if (code === 'auth/invalid-email') {
-        invalidEmails.value.push(emailValue)
-        notify('error', 'Invalid email')
+        notify('error', invalidateEmail(emailValue, 'invalid'))
       }
       if (code === 'auth/user-disabled') {
         notify('error', 'This account is blocked')
       }
       if (code === 'auth/user-not-found') {
-        inexistentUsers.value.push(emailValue)
-        notify('error', 'Email not registered')
+        notify('error', invalidateEmail(emailValue, 'inexistent'))
       }
       if (code === 'auth/wrong-password') {
         notify('error', 'Invalid password')
