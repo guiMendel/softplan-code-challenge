@@ -1,10 +1,19 @@
 <script setup lang="ts">
+import { auth } from '@/api/firebase'
 import InputField from '@/components/InputField.vue'
-import { computed, ref } from 'vue'
+import { createUserWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'firebase/auth'
+import { computed, onBeforeUnmount, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 // ========================
 // ==== FORM
 // ========================
+
+// Emails already in use
+const emailsInUse = ref<string[]>([])
+
+// Invalid emails already in use
+const invalidEmails = ref<string[]>([])
 
 // Fields
 const nickname = ref({
@@ -17,7 +26,13 @@ const nickname = ref({
 const email = ref({
   value: '',
   valid: false,
-  validate: (newValue: string) => (/.+@.+/.test(newValue) ? true : 'Invalid email')
+  validate: (newValue: string) => {
+    if (/.+@.+\..+/.test(newValue) == false) return 'Invalid email'
+    if (invalidEmails.value.includes(newValue)) return 'Invalid email'
+    if (emailsInUse.value.includes(newValue)) return 'Email already in use'
+
+    return true
+  }
 })
 
 const newPassword = ref({
@@ -47,7 +62,30 @@ const formIsValid = computed(
 // ==== SUBMISSION
 // ========================
 
+const router = useRouter()
 
+const submit = () => {
+  if (formIsValid.value == false) return
+
+  const emailValue = email.value.value
+
+  // Create the user
+  createUserWithEmailAndPassword(auth, emailValue, newPassword.value.value)
+    .then(({ user }) => {
+      // Set its nickname
+      updateProfile(user, { displayName: nickname.value.value })
+
+      // Redirect to home
+      router.push({ name: 'home' })
+    })
+    // Handle errors
+    .catch(({ code, message }) => {
+      console.log('Signup failed! ' + message)
+
+      if (code === 'auth/invalid-email') invalidEmails.value.push(emailValue)
+      if (code === 'auth/email-already-in-use') emailsInUse.value.push(emailValue)
+    })
+}
 </script>
 
 <template>
@@ -61,7 +99,7 @@ const formIsValid = computed(
       <InputField name="newPassword" v-model="newPassword" />
       <InputField name="passwordConfirmation" v-model="passwordConfirmation" />
 
-      <button @click.prevent="" id="submit" :class="formIsValid == false && 'disabled'">
+      <button @click.prevent="submit" id="submit" :class="formIsValid == false && 'disabled'">
         Submit
       </button>
 

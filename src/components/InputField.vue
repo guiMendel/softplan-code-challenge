@@ -13,7 +13,7 @@ const handleInput = (event: Event) => {
 
   const newValid =
     props.modelValue.validate != undefined
-      ? props.modelValue.validate(props.modelValue.value) === true
+      ? props.modelValue.validate(newValue) === true
       : true
 
   emit('update:modelValue', {
