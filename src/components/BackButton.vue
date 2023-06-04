@@ -12,6 +12,8 @@ const router = useRouter()
 #back-button {
   position: fixed;
 
+  z-index: 50;
+
   top: 1rem;
   left: 1rem;
 

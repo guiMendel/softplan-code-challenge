@@ -8,10 +8,10 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 /* Fontawesome icons */
-import { faBackward } from '@fortawesome/free-solid-svg-icons'
+import { faBackward, faPencil } from '@fortawesome/free-solid-svg-icons'
 
 /* Add icons to the library */
-library.add(faBackward)
+library.add(faBackward, faPencil)
 
 import App from './App.vue'
 import router from './router'
