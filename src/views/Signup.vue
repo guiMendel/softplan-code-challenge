@@ -68,9 +68,6 @@ const router = useRouter()
 const { notify } = useNotificationsStore()
 
 const submit = () => {
-  notify('error', 'Email already in use')
-  return
-
   if (formIsValid.value == false) return
 
   const emailValue = email.value.value

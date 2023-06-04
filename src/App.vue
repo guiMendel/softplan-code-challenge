@@ -1,11 +1,21 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
-import Notifications from './components/Notifications.vue';
+import { RouterView, useRouter } from 'vue-router'
+import Notifications from './components/Notifications.vue'
+import { auth } from './api/firebase'
+
+const router = useRouter()
+
+auth.onAuthStateChanged((newUser) => {
+  // When user is signed out and route requires authentication, redirect to login
+  if (newUser == null && router.currentRoute.value.meta.requiresAuth) {
+    router.push({ name: 'login' })
+  }
+})
 </script>
 
 <template>
   <Notifications />
-  
+
   <RouterView />
 </template>
 
