@@ -29,6 +29,9 @@ export const useNotificationsStore = defineStore('notifications', () => {
       [id]: notification
     }
 
+    // Erase after timeout
+    setTimeout(() => erase(id), timeout.value)
+
     return notification
   }
 
@@ -42,7 +45,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
   // How long a notification stays alive for
   const timeout = ref(5000)
 
-  const setTimeout = (newTimeout: number) => (timeout.value = newTimeout)
+  const alterTimeout = (newTimeout: number) => (timeout.value = newTimeout)
 
-  return { notifications, notify, erase, timeout, setTimeout }
+  return { notifications, notify, erase, timeout, setTimeout: alterTimeout }
 })
