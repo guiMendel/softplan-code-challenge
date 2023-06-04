@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { DOMWrapper, mount } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import InputField from '../InputField.vue'
 import { ref } from 'vue'
 

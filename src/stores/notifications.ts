@@ -3,6 +3,10 @@ import { defineStore } from 'pinia'
 import type { Notification } from '@/types/Notification.interface'
 
 export const useNotificationsStore = defineStore('notifications', () => {
+  // ===================
+  // === NOTIFICATIONS
+  // ===================
+
   // Id generator
   const idGenerator = ref(0)
 
@@ -31,5 +35,14 @@ export const useNotificationsStore = defineStore('notifications', () => {
   // Erase a notification
   const erase = (id: Notification['id']) => delete notifications.value[id]
 
-  return { notifications, notify, erase }
+  // ===================
+  // === TIME OUT
+  // ===================
+
+  // How long a notification stays alive for
+  const timeout = ref(5000)
+
+  const setTimeout = (newTimeout: number) => (timeout.value = newTimeout)
+
+  return { notifications, notify, erase, timeout, setTimeout }
 })
