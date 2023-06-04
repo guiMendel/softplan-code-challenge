@@ -1,16 +1,28 @@
+<script setup lang="ts">
+import { useNotificationsStore } from '@/stores/notifications'
+import { ref } from 'vue'
+
+const { notify } = useNotificationsStore()
+
+const email = ref('')
+const password = ref('')
+
+const login = () => {
+  notify('error', 'Invalid email')
+}
+</script>
+
 <template>
   <main>
     <form class="log-in">
       <!-- Title -->
       <h1>share md</h1>
 
-      <p id="error">Invalid email</p>
-
-      <input type="text" id="email" placeholder="email" />
-      <input type="password" id="password" placeholder="password" />
+      <input type="text" id="email" placeholder="email" v-model="email" />
+      <input type="password" id="password" placeholder="password" v-model="password" />
 
       <p id="forgot-password">Forgot your password?</p>
-      <button @click.prevent="" id="log-in">Log In</button>
+      <button @click.prevent="login" id="log-in">Log In</button>
 
       <p>First time? <a href="#" id="sign-up">Create an account.</a></p>
     </form>
@@ -72,6 +84,12 @@ main {
       background: $strong;
       border: none;
       border-radius: $border-radius;
+
+      // min-width: 5rem;
+      width: 100%;
+      text-align: center;
+      align-items: center;
+      justify-content: center;
 
       font-weight: 700;
 
