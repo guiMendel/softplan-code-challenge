@@ -2,10 +2,12 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { User } from '@/types/User.interface'
 import { auth, db } from '@/api/firebase'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateEmail,
+  updatePassword,
   updateProfile
 } from 'firebase/auth'
 
@@ -30,14 +32,6 @@ export const useUserStore = defineStore('user', () => {
       createdAt: new Date(userData.createdAt),
       about: userData.about,
       admin: userData.admin
-    }
-  }
-
-  // Update a user
-  const updateUser = (uid: string, newData: Partial<User>) => {
-    // Handle email change
-    if (newData.email != undefined) {
-      // auth.
     }
   }
 
@@ -78,5 +72,26 @@ export const useUserStore = defineStore('user', () => {
       return user
     })
 
-  return { currentUser, login, signup, getUser }
+  // Update the current user
+  const updateCurrentUser = async (newData: Partial<User> & { password?: string }) => {
+    if (auth.currentUser == null) return
+
+    // Handle email change
+    if (newData.email != undefined) await updateEmail(auth.currentUser, newData.email)
+
+    // Handle password change
+    if (newData.password != undefined) await updatePassword(auth.currentUser, newData.password)
+
+    // Handle name change
+    if (newData.name != undefined)
+      await updateProfile(auth.currentUser, { displayName: newData.name })
+
+    // Set database data
+    await updateDoc(getDocRef(auth.currentUser.uid), { ...newData })
+
+    // Update the local user data
+    currentUser.value = await getUser(auth.currentUser.uid)
+  }
+
+  return { currentUser, login, signup, getUser, updateCurrentUser }
 })

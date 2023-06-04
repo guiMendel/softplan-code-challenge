@@ -36,6 +36,7 @@ fetchUser()
 // ==============================
 
 // Current user
+const { updateCurrentUser } = useUserStore()
 const { currentUser: loggedUser } = storeToRefs(useUserStore())
 
 // Whether client has authorization to edit this user's data
@@ -59,8 +60,11 @@ const edit = () => {
 
 // Commit edits to field
 const commitEdit = async () => {
-  
-  
+  await updateCurrentUser({ name: name.value.value })
+
+  // Update local data
+  fetchUser()
+
   editing.value = false
 }
 
@@ -71,7 +75,7 @@ const editing = ref(false)
   <Transition name="fade">
     <div v-if="editing" class="overlay" @click.self="editing = false">
       <!-- Edit name modal -->
-      <div class="modal">
+      <form class="modal" @submit.prevent="commitEdit">
         <font-awesome-icon class="close-modal" @click="editing = false" :icon="['fas', 'xmark']" />
 
         <!-- Field indicator -->
@@ -81,8 +85,8 @@ const editing = ref(false)
         <InputField name="name" v-model="name" />
 
         <!-- Submit -->
-        <button @click="commitEdit">Submit</button>
-      </div>
+        <button>Submit</button>
+      </form>
     </div>
   </Transition>
 
