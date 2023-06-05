@@ -92,7 +92,14 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
       <font-awesome-icon class="magnifying-glass icon" :icon="['fas', 'magnifying-glass']" />
 
       <!-- Search input field -->
-      <input ref="inputElement" autofocus v-model="query" type="text" id="searchbar" />
+      <input
+        ref="inputElement"
+        autofocus
+        v-model="query"
+        type="text"
+        id="searchbar"
+        placeholder="What to look for?"
+      />
 
       <!-- Reset query -->
       <label
@@ -109,12 +116,16 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
     <div class="tabs">
       <!-- See users -->
       <span :class="showResults === 'users' && 'active'" @click="showResults = 'users'"
-        ><font-awesome-icon :icon="['fas', 'users']" />Users</span
+        ><font-awesome-icon :icon="['fas', 'users']" />Users<span class="count">{{
+          queriedUsers.length
+        }}</span></span
       >
 
       <!-- See papers -->
       <span :class="showResults === 'papers' && 'active'" @click="showResults = 'papers'"
-        ><font-awesome-icon :icon="['fas', 'file']" />Papers</span
+        ><font-awesome-icon :icon="['fas', 'file']" />Papers<span class="count">{{
+          queriedPapers.length
+        }}</span></span
       >
     </div>
 
@@ -193,6 +204,10 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
       font-size: 1.1rem;
 
       cursor: pointer;
+
+      &::placeholder {
+        color: $main;
+      }
     }
   }
 
@@ -220,6 +235,18 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
 
       svg {
         font-size: 0.9rem;
+      }
+
+      .count {
+        background-color: $main-trans;
+
+        aspect-ratio: 1/1;
+        width: 1.3rem;
+        border-radius: 50%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       &:hover {
