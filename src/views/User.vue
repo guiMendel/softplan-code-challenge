@@ -3,6 +3,7 @@ import { auth } from '@/api/firebase'
 import InputField from '@/components/InputField.vue'
 import UserProfilePicture from '@/components/UserProfilePicture.vue'
 import { useUserField, type Field } from '@/modules/useUserField'
+import { useInputStore } from '@/stores/input'
 import { useNotificationsStore } from '@/stores/notifications'
 import { useUserStore } from '@/stores/user'
 import type { User } from '@/types/User.interface'
@@ -49,6 +50,8 @@ const { name, email, password, passwordConfirmation, about, color } = useUserFie
 
 const { notify } = useNotificationsStore()
 
+const { getInput } = useInputStore()
+
 // Set the fields for the user
 const setFields = (user: User) => {
   name.value.value = user.name
@@ -57,65 +60,49 @@ const setFields = (user: User) => {
   color.value.value = user.color ?? '#FCA20D'
 }
 
-// Fields to edit
-const editFields = ref<Field[]>([])
-
 // Start editing fields
 const edit = (...fields: Field[]) => {
   if (canEdit.value == false) return
 
-  editFields.value = fields
-}
+  // Start editing
+  getInput('Edit profile', ...fields)
+    .then(async (newFields) => {
+      // Filter in only the edited fields
+      const update: Partial<User> & {
+        password?: string
+      } = {}
 
-// Commit edits to field
-const commitEdit = async () => {
-  if (editingIsValid.value == false) return
+      for (const field of newFields) {
+        if (field.name === 'passwordConfirmation') continue
 
-  // Filter in only the edited fields
-  const update: Partial<User> & {
-    password?: string
-  } = {}
+        update[field.name] = field.value as any
+      }
 
-  editFields.value.forEach((field) => {
-    if (field.name === 'passwordConfirmation') return
+      console.log('updating with', update)
 
-    update[field.name] = field.value as any
-  })
+      // Update the user in firebase
+      await updateCurrentUser(update).catch(({ code }) => {
+        if (code === 'auth/requires-recent-login') {
+          notify('error', 'Please login again to enable this operation')
+          auth.signOut()
+        }
+      })
 
-  await updateCurrentUser(update).catch(({ code }) => {
-    if (code === 'auth/requires-recent-login') {
-      notify('error', 'Please login again to enable this operation')
-      auth.signOut()
-    }
-  })
+      // Notify client
+      notify('success', 'User updated')
 
-  notify('success', 'User updated')
+      // Update local data
+      fetchUser()
+    })
 
-  // Update local data
-  fetchUser()
-
-  stopEdit()
+    // If canceled, ignore
+    .catch(() => {})
 }
 
 // Stop editing (close modal)
 const stopEdit = () => {
-  editFields.value = []
   confirmDeletion.value = false
 }
-
-// Whether is in the process of editing fields
-const editing = computed(() => editFields.value.length > 0)
-
-// Update a field given it's index and a new field content
-const updateField = (index: number, newField: Field) => {
-  editFields.value[index].value = newField.value
-  editFields.value[index].valid = newField.valid
-}
-
-// Whether the edited fields are valid
-const editingIsValid = computed(() =>
-  editFields.value.reduce((sum, field) => field.valid && sum, true)
-)
 
 // Whether to ask for delete confirmation
 const confirmDeletion = ref(false)
@@ -132,34 +119,14 @@ const deleteAccount = () => {
 
 <template>
   <Transition name="fade">
-    <div v-if="editing || confirmDeletion" class="overlay" @click.self="stopEdit">
+    <div v-if="confirmDeletion" class="overlay" @click.self="stopEdit">
       <!-- Delete account modal -->
-      <div v-if="confirmDeletion" class="modal delete-confirm">
+      <div class="modal delete-confirm">
         <span>Delete account? This action is <b>irreversible</b>.</span>
 
         <button class="confirm" @click="deleteAccount">Delete</button>
         <button class="cancel" @click="confirmDeletion = false">Cancel</button>
       </div>
-
-      <!-- Edit fields modal -->
-      <form v-if="editing" class="modal" @submit.prevent="commitEdit">
-        <font-awesome-icon class="close-modal" @click="stopEdit" :icon="['fas', 'xmark']" />
-
-        <!-- Field indicator -->
-        <p>Edit user</p>
-
-        <!-- Input -->
-        <InputField
-          v-for="(field, fieldIndex) in editFields"
-          :key="field.name"
-          :model-value="field"
-          @update:model-value="updateField(fieldIndex, $event)"
-          :multiline="field.name == 'about'"
-        />
-
-        <!-- Submit -->
-        <button :class="editingIsValid == false && 'disabled'">Submit</button>
-      </form>
     </div>
   </Transition>
 

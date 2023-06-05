@@ -86,7 +86,6 @@ onBeforeUnmount(() => clearInterval(countdown))
 
     &.success {
       background-color: $good;
-      color: $strong;
     }
 
     .countdown {

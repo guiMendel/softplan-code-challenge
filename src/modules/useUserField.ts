@@ -1,5 +1,5 @@
 import type { User } from '@/types/User.interface'
-import { ref, type Ref } from 'vue'
+import { ref, type Ref, watch } from 'vue'
 
 export interface Field {
   name: keyof User | 'password' | 'passwordConfirmation'
@@ -60,13 +60,34 @@ export const useUserField = () => {
     }
   })
 
+  const matchesPassword = (value: string): string | true => {
+    console.log(
+      'match',
+      password.value.value,
+      value,
+      passwordConfirmation.value.valid,
+      value === password.value.value
+    )
+
+    if (value == '' || value !== password.value.value) return "Doesn't match password"
+
+    return true
+  }
+
   const passwordConfirmation: Ref<Field> = ref({
     name: 'passwordConfirmation',
     value: '',
     valid: false,
-    validate: (newValue: string) =>
-      newValue == password.value.value ? true : "Doesn't match password"
+    validate: matchesPassword
   })
+
+  // Keep confirmation synced to password
+  watch(
+    password,
+    () =>
+      (passwordConfirmation.value.valid =
+        matchesPassword(passwordConfirmation.value.value) === true)
+  )
 
   const name: Ref<Field> = ref({
     name: 'name',
@@ -74,7 +95,7 @@ export const useUserField = () => {
     valid: false,
     validate: (newValue: string) => {
       if (newValue.length < 3) return 'Name needs at least 3 characters'
-      if (newValue.split(' ').length < 2) return 'Please provide first and last name'
+      if (/.+ .+/.test(newValue) == false) return 'Please provide first and last name'
       if (newValue.length > 20) return 'Too many characters'
 
       return true
@@ -103,5 +124,13 @@ export const useUserField = () => {
     }
   })
 
-  return { email, invalidateEmail, name, password, passwordConfirmation, about, color }
+  return {
+    email,
+    invalidateEmail,
+    name,
+    password,
+    passwordConfirmation,
+    about,
+    color
+  }
 }

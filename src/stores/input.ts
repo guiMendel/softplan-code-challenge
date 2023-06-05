@@ -1,6 +1,7 @@
 import type { Field } from '@/modules/useUserField'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import { useNotificationsStore } from './notifications'
 
 export const useInputStore = defineStore('input', () => {
   // ==============================================
@@ -42,7 +43,6 @@ export const useInputStore = defineStore('input', () => {
     // Store requested data
     title.value = inputTitle
     fields.value = inputFields
-    console.log('setting to true')
 
     // Store promise methods
     return new Promise<Field[]>((resolve, reject) => {

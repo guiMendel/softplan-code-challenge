@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Field } from '@/modules/useUserField'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import InputField from './InputField.vue'
 import { useInputStore } from '@/stores/input'
 import { storeToRefs } from 'pinia'
@@ -9,18 +9,28 @@ import { storeToRefs } from 'pinia'
 const { accept, cancel } = useInputStore()
 const { fields, title, hasOngoingInput } = storeToRefs(useInputStore())
 
-const stopEdit = () => {}
-const updateField = (index: number, field: Field) => {}
+const updateField = (index: number, { value, valid }: Field) => {
+  fields.value[index].value = value
+  fields.value[index].valid = valid
+}
 
-const editingIsValid = ref(false)
+const editingIsValid = computed(() => fields.value.reduce((sum, field) => sum && field.valid, true))
+
+const submit = () => {
+  if (editingIsValid.value) accept()
+}
 </script>
 
 <template>
   <Transition name="fade">
-    <div v-if="hasOngoingInput" class="overlay" @click.self="stopEdit">
+    <div v-if="hasOngoingInput" class="overlay" @click.self="cancel('User cancelled')">
       <!-- Edit fields modal -->
-      <form class="modal" @submit.prevent="accept">
-        <font-awesome-icon class="close-modal" @click="stopEdit" :icon="['fas', 'xmark']" />
+      <form class="modal" @submit.prevent="submit">
+        <font-awesome-icon
+          class="close-modal"
+          @click="cancel('User cancelled')"
+          :icon="['fas', 'xmark']"
+        />
 
         <!-- Input title -->
         <p>{{ title }}</p>
@@ -34,11 +44,14 @@ const editingIsValid = ref(false)
           :multiline="field.name == 'about'"
         />
 
-        <!-- Accept input -->
-        <button id="accept-input" :class="editingIsValid == false && 'disabled'">Submit</button>
+        <!-- Options -->
+        <div class="options">
+          <!-- Accept input -->
+          <button id="accept-input" :class="editingIsValid == false && 'disabled'">Submit</button>
 
-        <!-- Cancel input -->
-        <button id="cancel-input" @click.prevent="cancel('User cancelled')">Cancel</button>
+          <!-- Cancel input -->
+          <button id="cancel-input" @click.prevent="cancel('User cancelled')">Cancel</button>
+        </div>
       </form>
     </div>
   </Transition>
@@ -87,8 +100,19 @@ const editingIsValid = ref(false)
       font-size: 1.3rem;
     }
 
-    button {
+    .options {
       margin-top: 0.5rem;
+
+      width: 100%;
+      gap: 1rem;
+
+      #accept-input {
+        background-color: $good;
+        box-shadow: 0 0.1rem 1px 1px $main;
+        // color: $strong;
+
+        // filter: brightness(0.9) saturate(1.7);
+      }
     }
 
     .close-modal {
@@ -115,17 +139,6 @@ const editingIsValid = ref(false)
       &:hover {
         translate: 0 -0.1rem;
         filter: brightness(1.2);
-      }
-    }
-
-    &.delete-confirm {
-      span {
-        font-size: 1.2rem;
-      }
-
-      .confirm {
-        background-color: $bad;
-        box-shadow: 0 0.1rem 1px 1px $strong;
       }
     }
   }

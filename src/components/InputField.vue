@@ -50,15 +50,18 @@ const inferredType = computed(() => {
   if (props.modelValue.name.toLowerCase().includes('color')) return 'color'
   return 'text'
 })
+
+// Should the label be raised
+const raiseLabel = computed(
+  () => props.multiline || props.modelValue.value != '' || inferredType.value == 'color'
+)
 </script>
 
 <template>
   <div class="input-field" :class="errorMessage != '' && 'error'" @focusout="showErrors = true">
-    <label
-      :class="(modelValue.value != '' || inferredType == 'color') && 'raised'"
-      :for="modelValue.name"
-      >{{ splitCamelCase(modelValue.name) }}</label
-    >
+    <label :class="raiseLabel && 'raised'" :for="modelValue.name">{{
+      splitCamelCase(modelValue.name)
+    }}</label>
     <textarea
       v-if="multiline && inferredType != 'color'"
       :type="inferredType"
