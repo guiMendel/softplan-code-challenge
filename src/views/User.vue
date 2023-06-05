@@ -195,13 +195,14 @@ const requestDelete = () =>
         <em v-else>Empty</em>
       </div>
 
+      <!-- Email -->
+      <div class="email" :class="canEdit && 'editable'" @click="edit(email)">
+        <small>email</small>
+        <span>{{ user.email }}</span>
+      </div>
+
       <!-- Account details -->
       <template v-if="canEdit">
-        <div class="email editable" @click="edit(email)">
-          <small>email</small>
-          <span>{{ user.email }}</span>
-        </div>
-
         <!-- Sign out -->
         <button @click="auth.signOut">
           <font-awesome-icon :icon="['fas', 'right-from-bracket']" /> Sign Out
@@ -236,6 +237,10 @@ main {
   padding-bottom: 3rem;
   overflow-x: hidden;
 
+  small {
+    color: $main;
+  }
+  
   .editable {
     cursor: pointer;
 
@@ -342,7 +347,7 @@ main {
 
   .about.editable:hover,
   .name.editable:hover,
-  .email:hover {
+  .email.editable:hover {
     $highlight: rgba(191, 208, 2, 0.2);
 
     background-color: $highlight;

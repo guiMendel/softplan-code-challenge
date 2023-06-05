@@ -2,8 +2,9 @@
 import type { User } from '@/types/User.interface'
 import UserProfilePicture from './UserProfilePicture.vue'
 import { useRouter } from 'vue-router'
+import { computed } from 'vue'
 
-const props = defineProps<{ user: User }>()
+const props = defineProps<{ user: User; highlight?: { name?: string; email?: string } }>()
 
 const router = useRouter()
 
@@ -15,8 +16,15 @@ const openUserPage = () => router.push({ name: 'user', params: { userId: props.u
     <!-- Profile picture -->
     <UserProfilePicture :user="user" />
 
-    <!-- Name -->
-    <p class="name">{{ user.name }}</p>
+    <div class="text">
+      <!-- Name -->
+      <p v-if="highlight?.name == undefined" class="name">{{ user.name }}</p>
+      <p v-else v-html="highlight.name" class="name"></p>
+
+      <!-- Email -->
+      <p v-if="highlight?.email == undefined" class="email">{{ user.email }}</p>
+      <p v-else v-html="highlight.email" class="email"></p>
+    </div>
   </div>
 </template>
 
@@ -35,8 +43,16 @@ const openUserPage = () => router.push({ name: 'user', params: { userId: props.u
   gap: 1rem;
   cursor: pointer;
 
-  .name {
-    font-size: 1.1rem;
+  .text {
+    flex-direction: column;
+    gap: 0.2rem;
+    .name {
+      font-size: 1.1rem;
+    }
+
+    .email {
+      color: $main;
+    }
   }
 
   &:hover {

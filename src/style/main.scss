@@ -139,3 +139,10 @@ button {
 #app {
   min-height: 100vh;
 }
+
+// Query highlights
+em.highlight {
+  font-style: normal;
+
+  background-color: $bad-trans;
+}

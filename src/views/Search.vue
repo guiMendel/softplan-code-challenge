@@ -12,9 +12,21 @@ const query = ref('')
 // Which results to show (on mobile)
 const showResults = ref<'users' | 'papers'>('users')
 
+// Applies highlight marking to the given string
+const highlight = (text: string, startIndex: number, length: number) =>
+  `${text.slice(0, startIndex)}<em class="highlight">${text.slice(
+    startIndex,
+    startIndex + length
+  )}</em>${text.slice(startIndex + length)}`
+
 // ======================
 // === USERS
 // ======================
+
+interface UserResult {
+  user: User
+  highlight?: Partial<User>
+}
 
 // Grab all users
 const users = ref<User[]>([])
@@ -26,14 +38,36 @@ getAllUsers().then((newUsers) => {
 })
 
 // Queried users
-const queriedUsers = ref<User[]>([])
+const queriedUsers = ref<UserResult[]>([])
 
 // Whether a user passes the given query
-const filterUser = (user: User, query: string) => {
-  return true
+// Returns UserResult if passes, false otherwise
+const filterUser = (user: User, query: string): UserResult | false => {
+  if (query == '') return { user }
+
+  // Match on name
+  let match = user.name.toLowerCase().indexOf(query.toLowerCase())
+
+  // Return highlighted name
+  if (match !== -1) return { user, highlight: { name: highlight(user.name, match, query.length) } }
+
+  // Match on email
+  match = user.email.toLowerCase().indexOf(query.toLowerCase())
+
+  // Return highlighted email
+  if (match !== -1)
+    return { user, highlight: { email: highlight(user.email, match, query.length) } }
+
+  return false
 }
 
-const queryUsers = (query: string) => users.value.filter((user) => filterUser(user, query))
+const queryUsers = (query: string): UserResult[] => {
+  const filterQuery = query.trim().toLowerCase()
+
+  return users.value
+    .map((user) => filterUser(user, filterQuery))
+    .filter((result) => result !== false) as UserResult[]
+}
 
 // Query users when query changes
 watch(query, (newQuery) => (queriedUsers.value = queryUsers(newQuery)))
@@ -84,7 +118,12 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
     <div class="results">
       <!-- User results -->
       <div v-if="showResults === 'users'" class="users">
-        <UserPreview v-for="user in queriedUsers" :key="user.uid" :user="user" />
+        <UserPreview
+          v-for="queryResult in queriedUsers"
+          :key="queryResult.user.uid"
+          :user="queryResult.user"
+          :highlight="queryResult.highlight"
+        />
       </div>
 
       <!-- Paper results -->
@@ -197,12 +236,12 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
     width: 100%;
 
     padding-inline: 2rem;
-    
+
     .users,
     .papers {
       flex: 1;
       max-width: 30rem;
-      
+
       flex-direction: column;
       align-items: center;
 
