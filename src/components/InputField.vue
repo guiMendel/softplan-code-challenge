@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import type { Field } from '@/modules/useUserField'
+import { computed, ref } from 'vue'
 
 const props = defineProps<{
-  name: string
-  modelValue: { value: string; valid: boolean; validate?: (newValue: string) => true | string }
+  modelValue: Field
+  multiline?: boolean
 }>()
 
 const emit = defineEmits(['update:modelValue'])
@@ -12,9 +13,7 @@ const handleInput = (event: Event) => {
   const newValue = (event.target as HTMLInputElement).value
 
   const newValid =
-    props.modelValue.validate != undefined
-      ? props.modelValue.validate(newValue) === true
-      : true
+    props.modelValue.validate != undefined ? props.modelValue.validate(newValue) === true : true
 
   emit('update:modelValue', {
     ...props.modelValue,
@@ -44,16 +43,32 @@ if (props.modelValue.valid != validationResult.value)
 
 // Splits camelCase text
 const splitCamelCase = (text: string) => text.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase()
+
+// Infer type from name
+const inferredType = computed(() => {
+  if (props.modelValue.name.toLowerCase().includes('password')) return 'password'
+  return 'text'
+})
 </script>
 
 <template>
   <div class="input-field" :class="errorMessage != '' && 'error'" @focusout="showErrors = true">
-    <label v-if="name != ''" :class="modelValue.value != '' && 'raised'" :for="name">{{
-      splitCamelCase(name)
+    <label :class="modelValue.value != '' && 'raised'" :for="modelValue.name">{{
+      splitCamelCase(modelValue.name)
     }}</label>
+    <textarea
+      v-if="multiline"
+      :type="inferredType"
+      :id="modelValue.name"
+      v-bind="$attrs"
+      :value="modelValue.value"
+      @input="handleInput"
+    ></textarea>
+
     <input
-      :type="name.toLowerCase().includes('password') ? 'password' : 'text'"
-      :id="name"
+      v-else
+      :type="inferredType"
+      :id="modelValue.name"
       v-bind="$attrs"
       :value="modelValue.value"
       @input="handleInput"
@@ -68,6 +83,8 @@ const splitCamelCase = (text: string) => text.replace(/([a-z])([A-Z])/g, '$1 $2'
 .input-field {
   flex-direction: column;
   width: min-content;
+
+  $border: 2px solid $text;
 
   label {
     transition: all 200ms;
@@ -86,21 +103,37 @@ const splitCamelCase = (text: string) => text.replace(/([a-z])([A-Z])/g, '$1 $2'
     font-size: 0.8rem;
   }
 
-  input {
-    border-bottom: 2px solid $text;
+  input,
+  textarea {
+    border-bottom: $border;
     background: none;
     font-weight: 600;
     cursor: pointer;
 
     width: 14rem;
 
-    padding: 0.3rem 0;
+    padding-block: 0.3rem;
 
     transition: all 200ms;
 
     &::placeholder {
       opacity: 0.4;
     }
+
+    @media (min-width: 768px) {
+      width: 30rem;
+    }
+  }
+
+  textarea {
+    height: 7rem;
+    resize: vertical;
+
+    padding-inline: 0.5rem;
+
+    border-right: $border;
+    border-left: $border;
+    border-radius: $border-radius;
   }
 
   small {

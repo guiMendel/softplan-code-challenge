@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { auth } from '@/api/firebase'
 import InputField from '@/components/InputField.vue'
 import UserProfilePicture from '@/components/UserProfilePicture.vue'
-import { useUserField } from '@/modules/useUserField'
+import { useUserField, type Field } from '@/modules/useUserField'
+import { useNotificationsStore } from '@/stores/notifications'
 import { useUserStore } from '@/stores/user'
 import type { User } from '@/types/User.interface'
 import { storeToRefs } from 'pinia'
@@ -43,49 +45,96 @@ const { currentUser: loggedUser } = storeToRefs(useUserStore())
 const canEdit = computed(() => loggedUser.value != null && loggedUser.value.uid === user.value?.uid)
 
 // User fields
-const { name, email, password, passwordConfirmation } = useUserField()
+const { name, email, password, passwordConfirmation, about } = useUserField()
+
+const { notify } = useNotificationsStore()
 
 // Set the fields for the user
 const setFields = (user: User) => {
   name.value.value = user.name
   email.value.value = user.email
+  about.value.value = user.about ?? ''
 }
 
-// Start editing a field
-const edit = () => {
+// Fields to edit
+const editFields = ref<Field[]>([])
+
+// Start editing fields
+const edit = (...fields: Field[]) => {
   if (canEdit.value == false) return
 
-  editing.value = true
+  editFields.value = fields
 }
 
 // Commit edits to field
 const commitEdit = async () => {
-  await updateCurrentUser({ name: name.value.value })
+  if (editingIsValid.value == false) return
+
+  // Filter in only the edited fields
+  const update: Partial<User> & {
+    password?: string
+  } = {}
+
+  editFields.value.forEach((field) => {
+    if (field.name === 'passwordConfirmation') return
+
+    update[field.name] = field.value as any
+  })
+
+  await updateCurrentUser(update).catch(({ code }) => {
+    if (code === 'auth/requires-recent-login') {
+      notify('error', 'Please login again to enable this operation')
+      auth.signOut()
+    }
+  })
+
+  notify('success', 'User updated')
 
   // Update local data
   fetchUser()
 
-  editing.value = false
+  stopEdit()
 }
 
-const editing = ref(false)
+// Stop editing (close modal)
+const stopEdit = () => (editFields.value = [])
+
+// Whether is in the process of editing fields
+const editing = computed(() => editFields.value.length > 0)
+
+// Update a field given it's index and a new field content
+const updateField = (index: number, newField: Field) => {
+  editFields.value[index].value = newField.value
+  editFields.value[index].valid = newField.valid
+}
+
+// Whether the edited fields are valid
+const editingIsValid = computed(() =>
+  editFields.value.reduce((sum, field) => field.valid && sum, true)
+)
 </script>
 
 <template>
   <Transition name="fade">
-    <div v-if="editing" class="overlay" @click.self="editing = false">
+    <div v-if="editing" class="overlay" @click.self="stopEdit">
       <!-- Edit name modal -->
       <form class="modal" @submit.prevent="commitEdit">
-        <font-awesome-icon class="close-modal" @click="editing = false" :icon="['fas', 'xmark']" />
+        <font-awesome-icon class="close-modal" @click="stopEdit" :icon="['fas', 'xmark']" />
 
         <!-- Field indicator -->
-        <p>Edit name</p>
+        <p>Edit user</p>
 
         <!-- Input -->
-        <InputField name="name" v-model="name" />
+        <InputField
+          v-for="(field, fieldIndex) in editFields"
+          :key="field.name"
+          :model-value="field"
+          @update:model-value="updateField(fieldIndex, $event)"
+          :multiline="field.name == 'about'"
+        />
 
         <!-- Submit -->
-        <button>Submit</button>
+        <button :class="editingIsValid == false && 'disabled'">Submit</button>
       </form>
     </div>
   </Transition>
@@ -93,12 +142,12 @@ const editing = ref(false)
   <main v-if="user != null">
     <header>
       <!-- Picture -->
-      <div :class="canEdit && 'editable'" class="picture">
+      <div :class="canEdit && 'editable'" class="picture" @click="edit(name)">
         <UserProfilePicture :user="user" />
       </div>
 
       <!-- Name -->
-      <h1 :class="canEdit && 'editable'" class="name" @click="edit">{{ user.name }}</h1>
+      <h1 :class="canEdit && 'editable'" class="name" @click="edit(name)">{{ user.name }}</h1>
 
       <!-- Edit enabled notice -->
       <p v-if="canEdit" class="edit-notice">
@@ -123,20 +172,25 @@ const editing = ref(false)
       </div>
 
       <!-- About -->
-      <div v-if="user.about != undefined || canEdit" :class="canEdit && 'editable'" class="about">
+      <div
+        v-if="user.about != undefined || canEdit"
+        :class="canEdit && 'editable'"
+        class="about"
+        @click="edit(about)"
+      >
         <small>about</small>
-        <p v-if="user.about != undefined">user.about</p>
+        <p v-if="user.about != undefined">{{ user.about }}</p>
         <em v-else>Empty</em>
       </div>
 
       <!-- Account details -->
       <template v-if="canEdit">
-        <div class="email editable">
+        <div class="email editable" @click="edit(email)">
           <small>email</small>
           <span>{{ user.email }}</span>
         </div>
 
-        <button>Reset Password</button>
+        <button @click="edit(password, passwordConfirmation)">Reset Password</button>
       </template>
     </div>
   </main>
@@ -227,6 +281,9 @@ main {
 
   gap: 2rem;
 
+  padding-bottom: 3rem;
+  overflow-x: hidden;
+
   .editable {
     cursor: pointer;
 
@@ -279,9 +336,14 @@ main {
   .details {
     flex-direction: column;
     min-width: 13rem;
+    max-width: min(80%, 30rem);
 
     gap: 2rem;
     font-size: 1.2rem;
+
+    > * {
+      width: 100%;
+    }
 
     .join-date {
       font-weight: 600;
@@ -292,11 +354,11 @@ main {
       gap: 0.3rem;
       text-align: left;
 
-      max-width: min(80%, 30rem);
-
       overflow-wrap: break-word;
 
       border-radius: $border-radius;
+
+      line-height: 1.5rem;
     }
 
     .email {

@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { User } from '@/types/User.interface'
+import type { User, UserDatabase } from '@/types/User.interface'
 import { auth, db } from '@/api/firebase'
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import {
@@ -87,7 +87,14 @@ export const useUserStore = defineStore('user', () => {
       await updateProfile(auth.currentUser, { displayName: newData.name })
 
     // Set database data
-    await updateDoc(getDocRef(auth.currentUser.uid), { ...newData })
+    const databaseData: Omit<Partial<UserDatabase>, 'createdAt'> = {}
+
+    if (newData.name != undefined) databaseData.name = newData.name
+    if (newData.about != undefined) databaseData.about = newData.about
+    if (newData.admin != undefined) databaseData.admin = newData.admin
+    if (newData.email != undefined) databaseData.email = newData.email
+
+    await updateDoc(getDocRef(auth.currentUser.uid), databaseData)
 
     // Update the local user data
     currentUser.value = await getUser(auth.currentUser.uid)

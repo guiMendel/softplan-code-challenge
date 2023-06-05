@@ -1,4 +1,12 @@
-import { ref } from 'vue'
+import type { User } from '@/types/User.interface'
+import { ref, type Ref } from 'vue'
+
+export interface Field {
+  name: keyof User | 'password' | 'passwordConfirmation'
+  value: string
+  valid: boolean
+  validate?: (value: string) => true | string
+}
 
 export const useUserField = () => {
   type invalidEmailsType = {
@@ -24,11 +32,13 @@ export const useUserField = () => {
     return errorFor[reason]
   }
 
-  const email = ref({
+  const email: Ref<Field> = ref({
+    name: 'email',
     value: '',
     valid: false,
     validate: (newValue: string) => {
       if (/.+@.+\..+/.test(newValue) == false) return 'Invalid email'
+      if (newValue.length > 20) return 'Too many characters'
 
       for (const reason in invalidEmails.value)
         if (invalidEmails.value[reason as keyof invalidEmailsType].includes(newValue))
@@ -38,30 +48,49 @@ export const useUserField = () => {
     }
   })
 
-  const password = ref({
+  const password: Ref<Field> = ref({
+    name: 'password',
     value: '',
     valid: false,
-    validate: (newValue: string) =>
-      newValue.length >= 8 ? true : 'Password needs at least 8 characters'
+    validate: (newValue: string) => {
+      if (newValue.length < 8) return 'Password needs at least 8 characters'
+      if (newValue.length > 20) return 'Too many characters'
+
+      return true
+    }
   })
 
-  const passwordConfirmation = ref({
+  const passwordConfirmation: Ref<Field> = ref({
+    name: 'passwordConfirmation',
     value: '',
     valid: false,
     validate: (newValue: string) =>
       newValue == password.value.value ? true : "Doesn't match password"
   })
 
-  const name = ref({
+  const name: Ref<Field> = ref({
+    name: 'name',
     value: '',
     valid: false,
     validate: (newValue: string) => {
       if (newValue.length < 3) return 'Name needs at least 3 characters'
       if (newValue.split(' ').length < 2) return 'Please provide first and last name'
+      if (newValue.length > 20) return 'Too many characters'
 
       return true
     }
   })
 
-  return { email, invalidateEmail, name, password, passwordConfirmation }
+  const about: Ref<Field> = ref({
+    name: 'about',
+    value: '',
+    valid: false,
+    validate: (newValue: string) => {
+      if (newValue.length > 400) return 'Too many characters'
+
+      return true
+    }
+  })
+
+  return { email, invalidateEmail, name, password, passwordConfirmation, about }
 }
