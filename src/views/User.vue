@@ -51,8 +51,8 @@ const { notify } = useNotificationsStore()
 
 // Set the fields for the user
 const setFields = (user: User) => {
-  console.log("getting from", user)
-  
+  console.log('getting from', user)
+
   name.value.value = user.name
   email.value.value = user.email
   about.value.value = user.about ?? ''
@@ -144,6 +144,13 @@ const editingIsValid = computed(() =>
 
   <main v-if="user != null">
     <header>
+      <!-- Background color -->
+      <div
+        v-if="user.color != undefined"
+        class="background"
+        :style="{ backgroundColor: user.color }"
+      ></div>
+
       <!-- Picture -->
       <div :class="canEdit && 'editable'" class="picture" @click="edit(color)">
         <UserProfilePicture :user="user" />
@@ -309,6 +316,10 @@ main {
     align-items: flex-end;
     justify-content: center;
 
+    > *:not(.background) {
+      z-index: 1;
+    }
+
     .name {
       font-size: 2rem;
       overflow-wrap: break-word;
@@ -333,6 +344,17 @@ main {
       font-weight: bold;
 
       align-items: center;
+    }
+
+    .background {
+      top: 0;
+      left: 0;
+
+      position: absolute;
+      width: 100%;
+      height: 100%;
+
+      filter: $make-light;
     }
   }
 
