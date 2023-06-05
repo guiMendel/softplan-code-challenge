@@ -7,7 +7,7 @@ import { useInputStore } from '@/stores/input'
 import type { Field } from '@/modules/useUserField'
 import { nextTick } from 'vue'
 
-describe('InputRequestModal', () => {
+describe('InputRequestModal: general', () => {
   it('should start hidden', async () => {
     // Mount the component
     const wrapper = mount(InputRequestModal, {
@@ -19,7 +19,9 @@ describe('InputRequestModal', () => {
 
     expect(wrapper.text()).toBe('')
   })
+})
 
+describe('InputRequestModal: input fields', () => {
   it('should display input request fields and title', async () => {
     // Mount the component
     const wrapper = mount(InputRequestModal, {
@@ -112,6 +114,83 @@ describe('InputRequestModal', () => {
     await wrapper.find('#cancel-input').trigger('click')
 
     // Input should be cancelled
+    expect(inputStore.cancel).toHaveBeenCalledOnce()
+  })
+})
+
+describe('InputRequestModal: confirmation', () => {
+  it('should display confirmation title and buttons', async () => {
+    // Mount the component
+    const wrapper = mount(InputRequestModal, {
+      global: {
+        plugins: [createTestingPinia({ createSpy: fn, stubActions: false })],
+        stubs: ['font-awesome-icon']
+      }
+    })
+
+    // Get store
+    const inputStore = useInputStore()
+
+    // Request input
+    const title = 'test title'
+    const testYes = 'test yes'
+    const testNo = 'test no'
+
+    inputStore.getConfirmation(title, testYes, testNo)
+
+    // Wait for vue update
+    await nextTick()
+
+    expect(wrapper.text()).toContain(title)
+    expect(wrapper.text()).toContain(testYes)
+    expect(wrapper.text()).toContain(testNo)
+  })
+
+  it('should accept on click accept', async () => {
+    // Mount the component
+    const wrapper = mount(InputRequestModal, {
+      global: {
+        plugins: [createTestingPinia({ createSpy: fn, stubActions: false })],
+        stubs: ['font-awesome-icon']
+      }
+    })
+
+    // Get store
+    const inputStore = useInputStore()
+
+    inputStore.getConfirmation('test title')
+
+    // Wait for vue update
+    await nextTick()
+
+    // Trigger accept
+    await wrapper.find('#accept-confirmation').trigger('click')
+
+    // Accept should have been called
+    expect(inputStore.accept).toHaveBeenCalledOnce()
+  })
+
+  it('should cancel on click cancel', async () => {
+    // Mount the component
+    const wrapper = mount(InputRequestModal, {
+      global: {
+        plugins: [createTestingPinia({ createSpy: fn, stubActions: false })],
+        stubs: ['font-awesome-icon']
+      }
+    })
+
+    // Get store
+    const inputStore = useInputStore()
+
+    inputStore.getConfirmation('test title')
+
+    // Wait for vue update
+    await nextTick()
+
+    // Trigger accept
+    await wrapper.find('#cancel-confirmation').trigger('click')
+
+    // Cancel should have been called
     expect(inputStore.cancel).toHaveBeenCalledOnce()
   })
 })

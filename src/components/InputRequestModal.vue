@@ -7,7 +7,19 @@ import { storeToRefs } from 'pinia'
 
 // Get input request data
 const { accept, cancel } = useInputStore()
-const { fields, title, hasOngoingInput } = storeToRefs(useInputStore())
+const {
+  fields,
+  title,
+  hasOngoingInput,
+  confirmationTitle,
+  confirmationYes,
+  confirmationNo,
+  hasOngoingConfirmation
+} = storeToRefs(useInputStore())
+
+// ==============================
+// === INPUT FIELDS
+// ==============================
 
 const updateField = (index: number, { value, valid }: Field) => {
   fields.value[index].value = value
@@ -23,9 +35,27 @@ const submit = () => {
 
 <template>
   <Transition name="fade">
-    <div v-if="hasOngoingInput" class="overlay" @click.self="cancel('User cancelled')">
+    <div
+      v-if="hasOngoingInput || hasOngoingConfirmation"
+      class="overlay"
+      @click.self="cancel('User cancelled')"
+    >
+      <!-- Confirmation modal -->
+      <div v-if="hasOngoingConfirmation" class="modal">
+        <p>{{ confirmationTitle }}</p>
+
+        <!-- Options -->
+        <div class="options">
+          <!-- Accept input -->
+          <button id="accept-confirmation" @click="accept">{{ confirmationYes }}</button>
+
+          <!-- Cancel input -->
+          <button id="cancel-confirmation" @click="cancel()">{{ confirmationNo }}</button>
+        </div>
+      </div>
+
       <!-- Edit fields modal -->
-      <form class="modal" @submit.prevent="submit">
+      <form v-if="hasOngoingInput" class="modal" @submit.prevent="submit">
         <font-awesome-icon
           class="close-modal"
           @click="cancel('User cancelled')"
@@ -106,7 +136,8 @@ const submit = () => {
       width: 100%;
       gap: 1rem;
 
-      #accept-input {
+      #accept-input,
+      #accept-confirmation {
         background-color: $good;
         box-shadow: 0 0.1rem 1px 1px $main;
         // color: $strong;
