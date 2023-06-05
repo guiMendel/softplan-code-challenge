@@ -19,6 +19,10 @@ const highlight = (text: string, startIndex: number, length: number) =>
     startIndex + length
   )}</em>${text.slice(startIndex + length)}`
 
+// Focus on input
+const inputElement = ref<HTMLInputElement | null>(null)
+watch(inputElement, (element) => element?.focus())
+
 // ======================
 // === USERS
 // ======================
@@ -88,7 +92,7 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
       <font-awesome-icon class="magnifying-glass icon" :icon="['fas', 'magnifying-glass']" />
 
       <!-- Search input field -->
-      <input autofocus v-model="query" type="text" id="searchbar" />
+      <input ref="inputElement" autofocus v-model="query" type="text" id="searchbar" />
 
       <!-- Reset query -->
       <label
