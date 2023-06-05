@@ -38,7 +38,7 @@ const router = createRouter({
       path: '/signup',
       name: 'signup',
       component: Signup,
-      meta: { requiresNoAuth: true, hasBackButton: true }
+      meta: { requiresNoAuth: true }
     },
     {
       path: '/user/:userId',

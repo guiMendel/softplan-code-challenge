@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import type { User } from '@/types/User.interface'
+import { useUserStore } from '@/stores/user'
+import { ref, watch } from 'vue'
+
+const { getAllUsers } = useUserStore()
 
 // Searchbar content
 const query = ref('')
@@ -7,8 +11,35 @@ const query = ref('')
 // Which results to show (on mobile)
 const showResults = ref<'users' | 'papers'>('users')
 
-// Query results
-const results = ref({ users: ['User 1', 'User 2'], papers: ['Paper 1', 'Paper 2'] })
+// ======================
+// === USERS
+// ======================
+
+// Grab all users
+const users = ref<User[]>([])
+
+// Initialize them
+getAllUsers().then((newUsers) => (users.value = newUsers))
+
+// Queried users
+const queriedUsers = ref<User[]>([])
+
+// Whether a user passes the given query
+const filterUser = (user: User, query: string) => {
+  return true
+}
+
+// Query users when query changes
+watch(query, (newQuery) => {
+  queriedUsers.value = users.value.filter((user) => filterUser(user, newQuery))
+})
+
+// ======================
+// === PAPERS
+// ======================
+
+// Queried papers
+const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
 </script>
 
 <template>
@@ -49,12 +80,12 @@ const results = ref({ users: ['User 1', 'User 2'], papers: ['Paper 1', 'Paper 2'
     <div class="results">
       <!-- User results -->
       <div v-if="showResults === 'users'" class="users">
-        <span v-for="user in results.users" :key="user">{{ user }}</span>
+        <span v-for="user in queriedUsers" :key="user.uid">{{ user.name }}</span>
       </div>
 
       <!-- Paper results -->
       <div v-if="showResults === 'papers'" class="papers">
-        <span v-for="paper in results.papers" :key="paper">{{ paper }}</span>
+        <span v-for="paper in queriedPapers" :key="paper">{{ paper }}</span>
       </div>
     </div>
   </div>

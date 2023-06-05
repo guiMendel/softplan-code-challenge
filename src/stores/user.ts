@@ -2,7 +2,15 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { User, UserDatabase } from '@/types/User.interface'
 import { auth, db } from '@/api/firebase'
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc,
+  type DocumentData
+} from 'firebase/firestore'
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -16,6 +24,17 @@ export const useUserStore = defineStore('user', () => {
   // === GENERAL USERS
   // ==================
 
+  // Extract a user from a db user doc
+  const extractUser = (doc: DocumentData) => ({
+    uid: doc.uid,
+    name: doc.name,
+    email: doc.email,
+    createdAt: new Date(doc.createdAt),
+    about: doc.about,
+    admin: doc.admin,
+    color: doc.color
+  })
+
   // Get a user
   const getUser = async (uid: string): Promise<User | null> => {
     // Get the user's database data
@@ -25,15 +44,26 @@ export const useUserStore = defineStore('user', () => {
 
     console.log('User data:', userData)
 
-    return {
-      uid: uid,
-      name: userData.name,
-      email: userData.email,
-      createdAt: new Date(userData.createdAt),
-      about: userData.about,
-      admin: userData.admin,
-      color: userData.color
-    }
+    return extractUser(userData)
+
+    // return {
+    //   uid: uid,
+    //   name: userData.name,
+    //   email: userData.email,
+    //   createdAt: new Date(userData.createdAt),
+    //   about: userData.about,
+    //   admin: userData.admin,
+    //   color: userData.color
+    // }
+  }
+
+  // Get all users
+  const getAllUsers = async (): Promise<User[]> => {
+    // Get the database data
+    const { docs } = await getDocs(collection(db, 'users'))
+
+    // Map in a user fo each doc
+    return docs.map(extractUser)
   }
 
   // ==================
@@ -68,7 +98,7 @@ export const useUserStore = defineStore('user', () => {
       updateProfile(user, { displayName: name })
 
       // Set its database entry
-      setDoc(getDocRef(user.uid), { name, email, createdAt: new Date().toJSON() })
+      setDoc(getDocRef(user.uid), { name, email, createdAt: new Date().toJSON(), uid: user.uid })
 
       return user
     })
@@ -108,5 +138,5 @@ export const useUserStore = defineStore('user', () => {
     return auth.currentUser.delete()
   }
 
-  return { currentUser, login, signup, getUser, updateCurrentUser, deleteUser }
+  return { currentUser, login, signup, getUser, getAllUsers, updateCurrentUser, deleteUser }
 })
