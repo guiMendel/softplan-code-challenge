@@ -9,7 +9,10 @@ import {
   getDocs,
   setDoc,
   updateDoc,
-  type DocumentData
+  type DocumentData,
+  deleteDoc,
+  DocumentSnapshot,
+  QueryDocumentSnapshot
 } from 'firebase/firestore'
 import {
   createUserWithEmailAndPassword,
@@ -25,45 +28,37 @@ export const useUserStore = defineStore('user', () => {
   // ==================
 
   // Extract a user from a db user doc
-  const extractUser = (doc: DocumentData) => ({
-    uid: doc.uid,
-    name: doc.name,
-    email: doc.email,
-    createdAt: new Date(doc.createdAt),
-    about: doc.about,
-    admin: doc.admin,
-    color: doc.color
-  })
+  const extractUser = (
+    doc: DocumentSnapshot<DocumentData> | QueryDocumentSnapshot<DocumentData>
+  ) => {
+    const user = doc.data()
+
+    if (user == undefined) return null
+
+    return {
+      uid: doc.id,
+      name: user.name,
+      email: user.email,
+      createdAt: new Date(user.createdAt),
+      about: user.about,
+      admin: user.admin,
+      color: user.color
+    }
+  }
 
   // Get a user
-  const getUser = async (uid: string): Promise<User | null> => {
-    // Get the user's database data
-    const userData = await getDoc(getDocRef(uid)).then((document) => document.data())
-
-    if (userData == null) return null
-
-    console.log('User data:', userData)
-
-    return extractUser(userData)
-
-    // return {
-    //   uid: uid,
-    //   name: userData.name,
-    //   email: userData.email,
-    //   createdAt: new Date(userData.createdAt),
-    //   about: userData.about,
-    //   admin: userData.admin,
-    //   color: userData.color
-    // }
-  }
+  const getUser = async (uid: string): Promise<User | null> =>
+    getDoc(getDocRef(uid)).then(extractUser)
 
   // Get all users
   const getAllUsers = async (): Promise<User[]> => {
     // Get the database data
     const { docs } = await getDocs(collection(db, 'users'))
 
+    // console.log(docs.map(extractUser))
+
     // Map in a user fo each doc
-    return docs.map(extractUser)
+    return docs.map(extractUser) as User[]
   }
 
   // ==================
@@ -98,7 +93,7 @@ export const useUserStore = defineStore('user', () => {
       updateProfile(user, { displayName: name })
 
       // Set its database entry
-      setDoc(getDocRef(user.uid), { name, email, createdAt: new Date().toJSON(), uid: user.uid })
+      setDoc(getDocRef(user.uid), { name, email, createdAt: new Date().toJSON() })
 
       return user
     })
@@ -134,6 +129,9 @@ export const useUserStore = defineStore('user', () => {
 
   const deleteUser = async () => {
     if (auth.currentUser == null) return
+
+    // Delete database entry
+    await deleteDoc(getDocRef(auth.currentUser.uid))
 
     return auth.currentUser.delete()
   }

@@ -19,7 +19,10 @@ const showResults = ref<'users' | 'papers'>('users')
 const users = ref<User[]>([])
 
 // Initialize them
-getAllUsers().then((newUsers) => (users.value = newUsers))
+getAllUsers().then((newUsers) => {
+  users.value = newUsers
+  queriedUsers.value = queryUsers(query.value)
+})
 
 // Queried users
 const queriedUsers = ref<User[]>([])
@@ -29,10 +32,10 @@ const filterUser = (user: User, query: string) => {
   return true
 }
 
+const queryUsers = (query: string) => users.value.filter((user) => filterUser(user, query))
+
 // Query users when query changes
-watch(query, (newQuery) => {
-  queriedUsers.value = users.value.filter((user) => filterUser(user, newQuery))
-})
+watch(query, (newQuery) => (queriedUsers.value = queryUsers(newQuery)))
 
 // ======================
 // === PAPERS
