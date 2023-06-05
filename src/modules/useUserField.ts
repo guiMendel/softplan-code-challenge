@@ -61,14 +61,6 @@ export const useUserField = () => {
   })
 
   const matchesPassword = (value: string): string | true => {
-    console.log(
-      'match',
-      password.value.value,
-      value,
-      passwordConfirmation.value.valid,
-      value === password.value.value
-    )
-
     if (value == '' || value !== password.value.value) return "Doesn't match password"
 
     return true

@@ -4,7 +4,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { useInputStore } from '../input'
 import type { Field } from '@/modules/useUserField'
 
-describe('Input Store', () => {
+describe('Input Store: input fields', () => {
   beforeEach(() => {
     // creates a store for the test
     setActivePinia(createPinia())
@@ -79,5 +79,54 @@ describe('Input Store', () => {
 
     // Check if promise rejected with reason
     expect(promiseRejectedReason).toBe(reason)
+  })
+})
+
+describe('Input Store: confirmation', () => {
+  beforeEach(() => {
+    // creates a store for the test
+    setActivePinia(createPinia())
+  })
+
+  it('sets the confirmation labels', () => {
+    const inputStore = useInputStore()
+
+    const testTitle = 'test title'
+    const testYes = 'test yes'
+    const testNo = 'test no'
+
+    // Request input on this field
+    inputStore.getConfirmation(testTitle, testYes, testNo)
+
+    // Check if it was stored
+    expect(inputStore.confirmationTitle).toBe(testTitle)
+    expect(inputStore.confirmationYes).toBe(testYes)
+    expect(inputStore.confirmationNo).toBe(testNo)
+  })
+
+  it('resolves to true when accepted', async () => {
+    const inputStore = useInputStore()
+
+    // Request input on this field
+    const inputPromise = inputStore.getConfirmation('For test')
+
+    // Accept it
+    inputStore.accept()
+
+    // Check if resolved to new data
+    expect(await inputPromise).toBeTruthy()
+  })
+
+  it('resolves to false when canceled', async () => {
+    const inputStore = useInputStore()
+
+    // Request input on this field
+    const inputPromise = inputStore.getConfirmation('For test')
+
+    // Cancel it
+    inputStore.cancel()
+
+    // Check if resolved to new data
+    expect(await inputPromise).toBeFalsy()
   })
 })
