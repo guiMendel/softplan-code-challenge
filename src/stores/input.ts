@@ -15,36 +15,36 @@ export const useInputStore = defineStore('input', () => {
 
   // Accepts the field values
   const accept = () => {
-    // // Validate fields
-    // for (const field of fields.value) if (field.valid == false) return
+    // Validate fields
+    for (const field of fields.value) if (field.valid == false) return
 
-    // // Resolve on them
-    // resolveCache.value(fields.value)
+    // Resolve on them
+    resolveCache.value(fields.value)
 
-    // // Clear
-    // clearInputData()
+    // Clear
+    clearInputData()
   }
 
   // Cancel input request
   const cancel = (reason?: string) => {
-    // // Call reject
-    // rejectCache.value(reason)
+    // Call reject
+    rejectCache.value(reason)
 
-    // // Clear
-    // clearInputData()
+    // Clear
+    clearInputData()
   }
 
   // Asks the user for some input, and eventually returns the result
   const getInput = (inputTitle: string, ...inputFields: Field[]) => {
-    // // Store requested data
-    // title.value = inputTitle
-    // fields.value = inputFields
+    // Store requested data
+    title.value = inputTitle
+    fields.value = inputFields
 
-    // // Store promise methods
-    // return new Promise<Field[]>((resolve, reject) => {
-    //   resolveCache.value = resolve
-    //   rejectCache.value = reject
-    // })
+    // Store promise methods
+    return new Promise<Field[]>((resolve, reject) => {
+      resolveCache.value = resolve
+      rejectCache.value = reject
+    })
   }
 
   // ==============================================

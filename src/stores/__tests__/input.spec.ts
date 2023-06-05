@@ -35,15 +35,11 @@ describe('Input Store', () => {
     const testField: Field = {
       name: 'name',
       value: '',
-      valid: false
+      valid: true
     }
 
     // Request input on this field
     const inputPromise = inputStore.getInput('For test', testField)
-
-    // Checks if promise is resolved
-    let resolveValue = ''
-    inputPromise.then(([{ value }]) => (resolveValue = value))
 
     // Set new data
     const newData = 'new data'
@@ -53,7 +49,7 @@ describe('Input Store', () => {
     inputStore.accept()
 
     // Check if resolved to new data
-    expect(resolveValue).toBe(newData)
+    expect((await inputPromise)[0].value).toBe(newData)
   })
 
   it('rejects with reason', async () => {
@@ -70,11 +66,16 @@ describe('Input Store', () => {
 
     // Checks if promise is rejected
     let promiseRejectedReason = ''
-    inputPromise.catch((reason: string) => (promiseRejectedReason = reason))
 
     // Cancel it
     const reason = 'test reason'
     inputStore.cancel(reason)
+
+    try {
+      await inputPromise
+    } catch (reason: any) {
+      promiseRejectedReason = reason
+    }
 
     // Check if promise rejected with reason
     expect(promiseRejectedReason).toBe(reason)
