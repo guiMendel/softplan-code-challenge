@@ -62,7 +62,7 @@ export const useUserField = () => {
     value: '',
     valid: false,
     validate: (newValue: string) => {
-      if (newValue.length < 8) return 'Password needs at least 8 characters'
+      if (newValue.length < 6) return 'Password needs at least 6 characters'
       if (newValue.length > 20) return 'Too many characters'
 
       return true

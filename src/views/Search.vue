@@ -2,6 +2,7 @@
 import type { User } from '@/types/User.interface'
 import { useUserStore } from '@/stores/user'
 import { ref, watch } from 'vue'
+import UserPreview from '@/components/UserPreview.vue'
 
 const { getAllUsers } = useUserStore()
 
@@ -83,7 +84,7 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
     <div class="results">
       <!-- User results -->
       <div v-if="showResults === 'users'" class="users">
-        <span v-for="user in queriedUsers" :key="user.uid">{{ user.name }}</span>
+        <UserPreview v-for="user in queriedUsers" :key="user.uid" :user="user" />
       </div>
 
       <!-- Paper results -->
@@ -193,12 +194,23 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
   }
 
   .results {
+    width: 100%;
+
+    padding-inline: 2rem;
+    
     .users,
     .papers {
+      flex: 1;
+      max-width: 30rem;
+      
       flex-direction: column;
       align-items: center;
 
       gap: 1rem;
+
+      > * {
+        width: 100%;
+      }
     }
   }
 }
