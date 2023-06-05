@@ -8,7 +8,8 @@ describe('Notifications', () => {
   it('renders nothing when no notifications', () => {
     const wrapper = mount(Notifications, {
       global: {
-        plugins: [createTestingPinia({ createSpy: fn })]
+        plugins: [createTestingPinia({ createSpy: fn })],
+        stubs: ['font-awesome-icon']
       }
     })
 
@@ -32,7 +33,8 @@ describe('Notifications', () => {
               }
             }
           })
-        ]
+        ],
+        stubs: ['font-awesome-icon']
       }
     })
 

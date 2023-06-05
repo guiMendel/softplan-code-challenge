@@ -13,10 +13,11 @@ describe('InputField', () => {
     })
 
     const wrapper = mount(InputField, {
-      props: { modelValue: field.value }
+      props: { modelValue: field.value },
+      global: { stubs: ['font-awesome-icon'] }
     })
 
-    expect(wrapper.text()).toContain('test')
+    expect(wrapper.text()).toContain('name')
   })
 
   it('should update model value', async () => {
@@ -33,7 +34,8 @@ describe('InputField', () => {
         modelValue: field.value,
         'onUpdate:modelValue': (newValue: typeof field.value) => (field.value = newValue),
         placeholder
-      }
+      },
+      global: { stubs: ['font-awesome-icon'] }
     })
 
     const newValue = 'test value'
@@ -55,7 +57,8 @@ describe('InputField', () => {
       props: {
         modelValue: field.value,
         'onUpdate:modelValue': (newValue: typeof field.value) => (field.value = newValue)
-      }
+      },
+      global: { stubs: ['font-awesome-icon'] }
     })
 
     await wrapper.find('input').setValue('a value')
@@ -75,7 +78,8 @@ describe('InputField', () => {
       props: {
         modelValue: field.value,
         'onUpdate:modelValue': (newValue: typeof field.value) => (field.value = newValue)
-      }
+      },
+      global: { stubs: ['font-awesome-icon'] }
     })
 
     await wrapper.find('input').setValue('a value')

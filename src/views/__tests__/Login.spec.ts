@@ -9,7 +9,10 @@ import { fn } from '@vitest/spy'
 describe('Login', () => {
   it('should have login fields, submit, forgot password and new account buttons', () => {
     const wrapper = mount(Login, {
-      global: { plugins: [router, createTestingPinia({ createSpy: fn })] }
+      global: {
+        plugins: [router, createTestingPinia({ createSpy: fn })],
+        stubs: ['font-awesome-icon']
+      }
     })
 
     expect(wrapper.find('#email').exists()).toBeTruthy()

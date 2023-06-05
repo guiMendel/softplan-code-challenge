@@ -15,8 +15,6 @@ export const useNotificationsStore = defineStore('notifications', () => {
 
   // Create new notification
   const notify = (type: Notification['type'], message: Notification['message']) => {
-    console.log(notifications.value)
-
     const id = idGenerator.value++
 
     const notification = {

@@ -21,7 +21,7 @@ describe('BackButton', () => {
     // Mount the component
     const wrapper = mount(BackButton, {
       global: {
-        stubs: ['router-link']
+        stubs: ['router-link', 'font-awesome-icon']
       }
     })
 

@@ -38,8 +38,6 @@ describe('Notification Store', () => {
 
     await new Promise<void>((resolve) => {
       setTimeout(() => {
-        console.log(notificationStore.notifications)
-
         expect(Object.keys(notificationStore.notifications)).toHaveLength(0)
 
         resolve()
