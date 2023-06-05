@@ -3,6 +3,7 @@ import InputField from '@/components/InputField.vue'
 import { useUserField } from '@/modules/useUserField'
 import { useNotificationsStore } from '@/stores/notifications'
 import { useUserStore } from '@/stores/user'
+import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -16,6 +17,7 @@ const router = useRouter()
 
 const { notify } = useNotificationsStore()
 const { login } = useUserStore()
+const { getErrorForCode } = useUserField()
 
 // Login action
 const tryLogin = () => {
@@ -31,18 +33,11 @@ const tryLogin = () => {
     .catch(({ code, message }) => {
       console.log('Login failed! ' + message)
 
-      if (code === 'auth/invalid-email') {
-        notify('error', invalidateEmail(emailValue, 'invalid'))
-      }
-      if (code === 'auth/user-disabled') {
-        notify('error', 'This account is blocked')
-      }
-      if (code === 'auth/user-not-found') {
-        notify('error', invalidateEmail(emailValue, 'inexistent'))
-      }
-      if (code === 'auth/wrong-password') {
-        notify('error', 'Invalid password')
-      }
+      notify('error', getErrorForCode(code))
+
+      if (code === 'auth/invalid-email') invalidateEmail(emailValue, 'invalid')
+
+      if (code === 'auth/user-not-found') invalidateEmail(emailValue, 'inexistent')
     })
 }
 </script>

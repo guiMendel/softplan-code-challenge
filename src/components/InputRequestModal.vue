@@ -121,6 +121,7 @@ const submit = () => {
     background-color: $light;
 
     flex-direction: column;
+    align-items: center;
     gap: 0.5rem;
 
     border-radius: $border-radius;
@@ -128,6 +129,8 @@ const submit = () => {
     p {
       font-weight: 600;
       font-size: 1.3rem;
+
+      // text-align: left;
     }
 
     .options {
@@ -140,9 +143,10 @@ const submit = () => {
       #accept-confirmation {
         background-color: $good;
         box-shadow: 0 0.1rem 1px 1px $main;
-        // color: $strong;
 
-        // filter: brightness(0.9) saturate(1.7);
+        &.disabled {
+          box-shadow: none;
+        }
       }
     }
 

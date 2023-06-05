@@ -10,11 +10,14 @@ import type { User } from '@/types/User.interface'
 import { storeToRefs } from 'pinia'
 import { computed, ref, watch } from 'vue'
 
+// Get input methods
+const { getInput, getConfirmation } = useInputStore()
+
 // ==============================
 // === USER DATA
 // ==============================
 
-const { getUser } = useUserStore()
+const { getUser, login } = useUserStore()
 
 const props = defineProps<{ userId: User['uid'] }>()
 
@@ -35,6 +38,32 @@ watch(props, fetchUser)
 fetchUser()
 
 // ==============================
+// === CONFIRMING LOGIN
+// ==============================
+
+const { getErrorForCode } = useUserField()
+
+// Requests user to provide password
+const confirmLogin = async () => {
+  // Request password
+  return getInput('Please re-enter your password for added security', password.value).then(
+    ([{ value: inputPassword }]) => {
+      // Reset password field
+      password.value.value = ''
+      password.value.valid = false
+
+      if (user.value == undefined) return
+
+      // Perform login again
+      return login(user.value.email, inputPassword).catch(({ code }) => {
+        notify('error', getErrorForCode(code))
+        throw new Error('Login failed')
+      })
+    }
+  )
+}
+
+// ==============================
 // === UPDATING DATA
 // ==============================
 
@@ -49,8 +78,6 @@ const canEdit = computed(() => loggedUser.value != null && loggedUser.value.uid 
 const { name, email, password, passwordConfirmation, about, color } = useUserField()
 
 const { notify } = useNotificationsStore()
-
-const { getInput } = useInputStore()
 
 // Set the fields for the user
 const setFields = (user: User) => {
@@ -99,37 +126,24 @@ const edit = (...fields: Field[]) => {
     .catch(() => {})
 }
 
-// Stop editing (close modal)
-const stopEdit = () => {
-  confirmDeletion.value = false
-}
+const resetPassword = () =>
+  confirmLogin().then(() => edit(password.value, passwordConfirmation.value))
 
-// Whether to ask for delete confirmation
-const confirmDeletion = ref(false)
+// ==============================
+// === DELETING USER
+// ==============================
 
-const deleteAccount = () => {
-  deleteUser().catch(({ code }) => {
-    if (code === 'auth/requires-recent-login') {
-      notify('error', 'Please login again to enable this operation')
-      auth.signOut()
-    }
-  })
-}
+const requestDelete = () =>
+  confirmLogin().then(() =>
+    getConfirmation('Delete account? This action is irreversible.', 'Delete').then(
+      (confirmDelete) => {
+        if (confirmDelete) deleteUser()
+      }
+    )
+  )
 </script>
 
 <template>
-  <Transition name="fade">
-    <div v-if="confirmDeletion" class="overlay" @click.self="stopEdit">
-      <!-- Delete account modal -->
-      <div class="modal delete-confirm">
-        <span>Delete account? This action is <b>irreversible</b>.</span>
-
-        <button class="confirm" @click="deleteAccount">Delete</button>
-        <button class="cancel" @click="confirmDeletion = false">Cancel</button>
-      </div>
-    </div>
-  </Transition>
-
   <main v-if="user != null">
     <header>
       <!-- Background color -->
@@ -194,12 +208,12 @@ const deleteAccount = () => {
         </button>
 
         <!-- Reset password -->
-        <button @click="edit(password, passwordConfirmation)">
+        <button @click="resetPassword">
           <font-awesome-icon :icon="['fas', 'key']" /> Reset Password
         </button>
 
         <!-- Delete account -->
-        <button @click="confirmDeletion = true" class="delete">
+        <button @click="requestDelete" class="delete">
           <font-awesome-icon :icon="['fas', 'trash-can']" /> Delete Account
         </button>
       </template>
@@ -209,90 +223,6 @@ const deleteAccount = () => {
 
 <style scoped lang="scss">
 @import '../style/variables.scss';
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 200ms ease-in-out;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.overlay {
-  position: fixed;
-  width: 100%;
-  height: 100vh;
-
-  background-color: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(2px);
-
-  z-index: 100;
-
-  align-items: center;
-  justify-content: center;
-
-  .modal {
-    position: relative;
-    padding: 1rem 1.5rem 1.5rem;
-
-    max-width: 80%;
-    background-color: $light;
-
-    flex-direction: column;
-    gap: 0.5rem;
-
-    border-radius: $border-radius;
-
-    p {
-      font-weight: 600;
-      font-size: 1.3rem;
-    }
-
-    button {
-      margin-top: 0.5rem;
-    }
-
-    .close-modal {
-      position: absolute;
-      top: -0.8rem;
-      right: -0.8rem;
-
-      font-size: 2rem;
-
-      border-radius: 50%;
-      padding: 0.1rem;
-
-      color: $strong;
-
-      box-shadow: 0 1px 3px 1px rgba(50, 50, 50, 0.2);
-
-      aspect-ratio: 1/1;
-      background-color: $bad;
-
-      cursor: pointer;
-
-      transition: all 100ms;
-
-      &:hover {
-        translate: 0 -0.1rem;
-        filter: brightness(1.2);
-      }
-    }
-
-    &.delete-confirm {
-      span {
-        font-size: 1.2rem;
-      }
-
-      .confirm {
-        background-color: $bad;
-        box-shadow: 0 0.1rem 1px 1px $strong;
-      }
-    }
-  }
-}
 
 main {
   width: 100%;

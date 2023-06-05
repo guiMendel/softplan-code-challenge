@@ -15,10 +15,19 @@ export const useUserField = () => {
     inexistent: string[]
   }
 
+  // Converts a login error code to a human readable message
+  const getErrorForCode = (code: string) => {
+    if (code == 'auth/invalid-email') return 'Invalid email'
+    if (code == 'auth/user-disabled') return 'This account is blocked'
+    if (code == 'auth/user-not-found') return 'Email not registered'
+    if (code == 'auth/wrong-password') return 'Invalid password'
+    return 'Invalid'
+  }
+
   // Errors for invalid email types
   const errorFor = {
-    invalid: 'Invalid email',
-    inUse: 'Email already in use',
+    invalid: getErrorForCode('auth/invalid-email'),
+    inUse: getErrorForCode('auth/user-not-found'),
     inexistent: 'Email not registered'
   }
 
@@ -123,6 +132,7 @@ export const useUserField = () => {
     password,
     passwordConfirmation,
     about,
-    color
+    color,
+    getErrorForCode
   }
 }
