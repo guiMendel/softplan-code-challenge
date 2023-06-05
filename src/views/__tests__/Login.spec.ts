@@ -1,6 +1,5 @@
-import { RouterLinkStub, mount } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import Login from '../Login.vue'
-// import { describe, it } from 'node:test'
 import { expect, describe, it } from 'vitest'
 import router from '@/router'
 import { createTestingPinia } from '@pinia/testing'

@@ -17,7 +17,8 @@ import {
   faTrashCan,
   faRightFromBracket,
   faPlus,
-  faEllipsisVertical
+  faEllipsisVertical,
+  faMagnifyingGlass
 } from '@fortawesome/free-solid-svg-icons'
 
 /* Add icons to the library */
@@ -30,7 +31,8 @@ library.add(
   faTrashCan,
   faRightFromBracket,
   faPlus,
-  faEllipsisVertical
+  faEllipsisVertical,
+  faMagnifyingGlass
 )
 
 import App from './App.vue'

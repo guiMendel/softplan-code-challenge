@@ -3,6 +3,7 @@ import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Signup from '../views/Signup.vue'
 import User from '../views/User.vue'
+import PapersIndex from '../views/PapersIndex.vue'
 import { navigationGuard } from './navigationGuard'
 
 const router = createRouter({
@@ -10,9 +11,16 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
       component: Home,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true },
+
+      children: [
+        {
+          path: '',
+          name: 'home',
+          component: PapersIndex
+        }
+      ]
     },
     {
       path: '/login',
