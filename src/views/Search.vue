@@ -1,3 +1,16 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+// Searchbar content
+const query = ref('')
+
+// Which results to show (on mobile)
+const showResults = ref<'users' | 'papers'>('users')
+
+// Query results
+const results = ref({ users: ['User 1', 'User 2'], papers: ['Paper 1', 'Paper 2'] })
+</script>
+
 <template>
   <div class="search">
     <!-- Searchbar -->
@@ -6,27 +19,43 @@
       <font-awesome-icon class="magnifying-glass icon" :icon="['fas', 'magnifying-glass']" />
 
       <!-- Search input field -->
-      <input autofocus type="text" />
+      <input autofocus v-model="query" type="text" id="searchbar" />
 
       <!-- Reset query -->
-      <div class="clear icon">
+      <label
+        for="searchbar"
+        class="clear icon"
+        :class="query == '' && 'hidden'"
+        @click="query = ''"
+      >
         <font-awesome-icon :icon="['fas', 'xmark']" />
-      </div>
+      </label>
     </div>
 
     <!-- Result tab toggle -->
     <div class="tabs">
       <!-- See users -->
-      <span class="active"><font-awesome-icon :icon="['fas', 'users']" />Users</span>
+      <span :class="showResults === 'users' && 'active'" @click="showResults = 'users'"
+        ><font-awesome-icon :icon="['fas', 'users']" />Users</span
+      >
 
       <!-- See papers -->
-      <span><font-awesome-icon :icon="['fas', 'file']" />Papers</span>
+      <span :class="showResults === 'papers' && 'active'" @click="showResults = 'papers'"
+        ><font-awesome-icon :icon="['fas', 'file']" />Papers</span
+      >
     </div>
 
     <!-- Query results -->
     <div class="results">
-      <span>User 1</span>
-      <span>User 2</span>
+      <!-- User results -->
+      <div v-if="showResults === 'users'" class="users">
+        <span v-for="user in results.users" :key="user">{{ user }}</span>
+      </div>
+
+      <!-- Paper results -->
+      <div v-if="showResults === 'papers'" class="papers">
+        <span v-for="paper in results.papers" :key="paper">{{ paper }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -64,6 +93,13 @@
         aspect-ratio: 1/1;
         width: 1.2rem;
         border-radius: 50%;
+
+        transition: all 200ms;
+
+        &.hidden {
+          pointer-events: none;
+          opacity: 0;
+        }
       }
     }
 
@@ -123,10 +159,13 @@
   }
 
   .results {
-    flex-direction: column;
-    align-items: center;
+    .users,
+    .papers {
+      flex-direction: column;
+      align-items: center;
 
-    gap: 1rem;
+      gap: 1rem;
+    }
   }
 }
 </style>
