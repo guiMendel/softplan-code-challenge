@@ -45,15 +45,18 @@ const { currentUser: loggedUser } = storeToRefs(useUserStore())
 const canEdit = computed(() => loggedUser.value != null && loggedUser.value.uid === user.value?.uid)
 
 // User fields
-const { name, email, password, passwordConfirmation, about } = useUserField()
+const { name, email, password, passwordConfirmation, about, color } = useUserField()
 
 const { notify } = useNotificationsStore()
 
 // Set the fields for the user
 const setFields = (user: User) => {
+  console.log("getting from", user)
+  
   name.value.value = user.name
   email.value.value = user.email
   about.value.value = user.about ?? ''
+  color.value.value = user.color ?? '#FCA20D'
 }
 
 // Fields to edit
@@ -142,7 +145,7 @@ const editingIsValid = computed(() =>
   <main v-if="user != null">
     <header>
       <!-- Picture -->
-      <div :class="canEdit && 'editable'" class="picture" @click="edit(name)">
+      <div :class="canEdit && 'editable'" class="picture" @click="edit(color)">
         <UserProfilePicture :user="user" />
       </div>
 

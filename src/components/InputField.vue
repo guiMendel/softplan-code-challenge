@@ -47,17 +47,20 @@ const splitCamelCase = (text: string) => text.replace(/([a-z])([A-Z])/g, '$1 $2'
 // Infer type from name
 const inferredType = computed(() => {
   if (props.modelValue.name.toLowerCase().includes('password')) return 'password'
+  if (props.modelValue.name.toLowerCase().includes('color')) return 'color'
   return 'text'
 })
 </script>
 
 <template>
   <div class="input-field" :class="errorMessage != '' && 'error'" @focusout="showErrors = true">
-    <label :class="modelValue.value != '' && 'raised'" :for="modelValue.name">{{
-      splitCamelCase(modelValue.name)
-    }}</label>
+    <label
+      :class="(modelValue.value != '' || inferredType == 'color') && 'raised'"
+      :for="modelValue.name"
+      >{{ splitCamelCase(modelValue.name) }}</label
+    >
     <textarea
-      v-if="multiline"
+      v-if="multiline && inferredType != 'color'"
       :type="inferredType"
       :id="modelValue.name"
       v-bind="$attrs"
@@ -72,7 +75,18 @@ const inferredType = computed(() => {
       v-bind="$attrs"
       :value="modelValue.value"
       @input="handleInput"
+      :style="inferredType == 'color' && 'display: none'"
     />
+
+    <label
+      v-if="inferredType == 'color'"
+      :for="modelValue.name"
+      :style="{ backgroundColor: modelValue.value }"
+      class="color-display"
+    >
+      <font-awesome-icon :icon="['fas', 'palette']" />
+    </label>
+
     <small class="error">{{ validationResult }}</small>
   </div>
 </template>
@@ -104,13 +118,14 @@ const inferredType = computed(() => {
   }
 
   input,
-  textarea {
+  textarea,
+  .color-display {
     border-bottom: $border;
     background: none;
     font-weight: 600;
     cursor: pointer;
 
-    width: 14rem;
+    width: 12rem;
 
     padding-block: 0.3rem;
 
@@ -134,6 +149,26 @@ const inferredType = computed(() => {
     border-right: $border;
     border-left: $border;
     border-radius: $border-radius;
+  }
+
+  .color-display {
+    margin-top: -1.5rem;
+    margin-bottom: 1.5rem;
+
+    padding: 0 0.5rem;
+    height: 2rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    border-radius: $border-radius;
+
+    box-shadow: 0 0 3px 2px rgba(68, 68, 68, 0.1);
+
+    > * {
+      color: $text;
+    }
   }
 
   small {

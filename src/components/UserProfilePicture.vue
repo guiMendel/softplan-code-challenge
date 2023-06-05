@@ -15,7 +15,10 @@ const initials = computed(() =>
 </script>
 
 <template>
-  <div class="portrait">
+  <div
+    class="portrait"
+    :style="props.user.color != undefined ? { backgroundColor: props.user.color } : {}"
+  >
     <span class="initials">{{ initials }}</span>
   </div>
 </template>

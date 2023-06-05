@@ -8,6 +8,7 @@ export interface UserDatabase {
 
   createdAt: Date
 
+  color?: string
   about?: string
   admin?: boolean
 }

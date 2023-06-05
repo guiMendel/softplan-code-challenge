@@ -31,7 +31,8 @@ export const useUserStore = defineStore('user', () => {
       email: userData.email,
       createdAt: new Date(userData.createdAt),
       about: userData.about,
-      admin: userData.admin
+      admin: userData.admin,
+      color: userData.color
     }
   }
 
@@ -93,6 +94,7 @@ export const useUserStore = defineStore('user', () => {
     if (newData.about != undefined) databaseData.about = newData.about
     if (newData.admin != undefined) databaseData.admin = newData.admin
     if (newData.email != undefined) databaseData.email = newData.email
+    if (newData.color != undefined) databaseData.color = newData.color
 
     await updateDoc(getDocRef(auth.currentUser.uid), databaseData)
 

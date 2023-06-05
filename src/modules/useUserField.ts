@@ -92,5 +92,16 @@ export const useUserField = () => {
     }
   })
 
-  return { email, invalidateEmail, name, password, passwordConfirmation, about }
+  const color: Ref<Field> = ref({
+    name: 'color',
+    value: '',
+    valid: false,
+    validate: (newValue: string) => {
+      if (/^#[a-fA-F0-9]{6}$/.test(newValue) == false) return 'Invalid color'
+
+      return true
+    }
+  })
+
+  return { email, invalidateEmail, name, password, passwordConfirmation, about, color }
 }
