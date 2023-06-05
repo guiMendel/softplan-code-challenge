@@ -6,6 +6,7 @@ import BackButton from './components/BackButton.vue'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from './stores/user'
 import { computed, ref, watch } from 'vue'
+import InputRequestModal from './components/InputRequestModal.vue'
 
 const { currentUser } = storeToRefs(useUserStore())
 const router = useRouter()
@@ -37,6 +38,9 @@ const shouldHaveBackButton = computed(() => router.currentRoute.value.meta.hasBa
 <template>
   <!-- Notification floating list -->
   <Notifications />
+
+  <!-- Input request modal -->
+  <InputRequestModal />
 
   <!-- Floating user panel -->
   <UserPanel />

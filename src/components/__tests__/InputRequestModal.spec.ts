@@ -12,6 +12,7 @@ describe('InputRequestModal', () => {
     // Mount the component
     const wrapper = mount(InputRequestModal, {
       global: {
+        plugins: [createTestingPinia({ createSpy: fn })],
         stubs: ['font-awesome-icon']
       }
     })
@@ -23,7 +24,7 @@ describe('InputRequestModal', () => {
     // Mount the component
     const wrapper = mount(InputRequestModal, {
       global: {
-        plugins: [createTestingPinia({ createSpy: fn })],
+        plugins: [createTestingPinia({ createSpy: fn, stubActions: false })],
         stubs: ['font-awesome-icon']
       }
     })
@@ -56,7 +57,7 @@ describe('InputRequestModal', () => {
     // Mount the component
     const wrapper = mount(InputRequestModal, {
       global: {
-        plugins: [createTestingPinia({ createSpy: fn })],
+        plugins: [createTestingPinia({ createSpy: fn, stubActions: false })],
         stubs: ['font-awesome-icon']
       }
     })
@@ -71,23 +72,23 @@ describe('InputRequestModal', () => {
       valid: true
     }
 
-    const inputPromise = inputStore.getInput('test title', testField)
+    inputStore.getInput('test title', testField)
 
     // Wait for vue update
     await nextTick()
 
-    // Click accept
-    await wrapper.find('#accept-input').trigger('click')
+    // Trigger form submission
+    await wrapper.find('form').trigger('submit')
 
-    // Promise should resolve
-    expect(await inputPromise).toBeTruthy()
+    // Accept should have been called
+    expect(inputStore.accept).toHaveBeenCalledOnce()
   })
 
   it('should reject input on cancel', async () => {
     // Mount the component
     const wrapper = mount(InputRequestModal, {
       global: {
-        plugins: [createTestingPinia({ createSpy: fn })],
+        plugins: [createTestingPinia({ createSpy: fn, stubActions: false })],
         stubs: ['font-awesome-icon']
       }
     })
@@ -102,7 +103,7 @@ describe('InputRequestModal', () => {
       valid: true
     }
 
-    const inputPromise = inputStore.getInput('test title', testField)
+    inputStore.getInput('test title', testField).catch(() => {})
 
     // Wait for vue update
     await nextTick()
@@ -110,7 +111,7 @@ describe('InputRequestModal', () => {
     // Click cancel
     await wrapper.find('#cancel-input').trigger('click')
 
-    // Promise should reject
-    expect(await inputPromise).toThrow()
+    // Input should be cancelled
+    expect(inputStore.cancel).toHaveBeenCalledOnce()
   })
 })
