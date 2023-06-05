@@ -32,6 +32,8 @@ const isUserPage = computed(() => route.name == 'user')
 @import '../style/variables.scss';
 
 #user-panel {
+  z-index: 40;
+  
   display: flex;
   color: inherit;
 

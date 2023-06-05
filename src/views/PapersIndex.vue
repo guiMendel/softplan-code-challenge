@@ -39,8 +39,6 @@
 @import '../style/variables.scss';
 
 .papers-index {
-  // margin-top: 2rem;
-
   flex-direction: column;
 
   width: 100%;

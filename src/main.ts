@@ -19,7 +19,9 @@ import {
   faPlus,
   faEllipsisVertical,
   faMagnifyingGlass,
-  faFolder
+  faFolder,
+  faFile,
+  faUsers
 } from '@fortawesome/free-solid-svg-icons'
 
 /* Add icons to the library */
@@ -34,7 +36,9 @@ library.add(
   faPlus,
   faEllipsisVertical,
   faMagnifyingGlass,
-  faFolder
+  faFolder,
+  faFile,
+  faUsers
 )
 
 import App from './App.vue'
