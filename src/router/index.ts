@@ -4,6 +4,7 @@ import Login from '../views/Login.vue'
 import Signup from '../views/Signup.vue'
 import User from '../views/User.vue'
 import PapersIndex from '../views/PapersIndex.vue'
+import Search from '../views/Search.vue'
 import { navigationGuard } from './navigationGuard'
 
 const router = createRouter({
@@ -19,6 +20,11 @@ const router = createRouter({
           path: '',
           name: 'home',
           component: PapersIndex
+        },
+        {
+          path: 'search',
+          name: 'search',
+          component: Search
         }
       ]
     },

@@ -18,7 +18,8 @@ import {
   faRightFromBracket,
   faPlus,
   faEllipsisVertical,
-  faMagnifyingGlass
+  faMagnifyingGlass,
+  faFolder
 } from '@fortawesome/free-solid-svg-icons'
 
 /* Add icons to the library */
@@ -32,7 +33,8 @@ library.add(
   faRightFromBracket,
   faPlus,
   faEllipsisVertical,
-  faMagnifyingGlass
+  faMagnifyingGlass,
+  faFolder
 )
 
 import App from './App.vue'

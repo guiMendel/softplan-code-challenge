@@ -1,10 +1,25 @@
+<script setup lang="ts">
+import { useRouter } from 'vue-router'
+
+// Access router
+const router = useRouter()
+
+const triggerNavigation = () => {
+  if (router.currentRoute.value.name == 'search') router.push({ name: 'home' })
+  else router.push({ name: 'search' })
+}
+</script>
+
 <template>
   <main>
-    <!-- Start search -->
-    <div class="start-search">
-      <font-awesome-icon :icon="['fas', 'magnifying-glass']" />
-      <span>start search</span>
+    <!-- Home navigation button -->
+    <div class="navigation-button" @click="triggerNavigation">
+      <font-awesome-icon
+        :icon="['fas', router.currentRoute.value.name == 'search' ? 'folder' : 'magnifying-glass']"
+      />
+      <span>{{ router.currentRoute.value.name == 'search' ? 'see papers' : 'start search' }}</span>
     </div>
+
     <!-- Show page content -->
     <RouterView />
   </main>
@@ -23,7 +38,7 @@ main {
 
   flex-direction: column;
 
-  .start-search {
+  .navigation-button {
     margin-left: 2rem;
 
     @include light-button;
