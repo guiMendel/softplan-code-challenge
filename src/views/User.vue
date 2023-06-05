@@ -51,8 +51,6 @@ const { notify } = useNotificationsStore()
 
 // Set the fields for the user
 const setFields = (user: User) => {
-  console.log('getting from', user)
-
   name.value.value = user.name
   email.value.value = user.email
   about.value.value = user.about ?? ''

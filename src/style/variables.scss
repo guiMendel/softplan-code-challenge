@@ -1,15 +1,24 @@
 // Colors
 $transparent: #00000000;
 
-$good: #C4F500;
-$light: #FCE70D;
-$main: #E6B517;
-$strong: #FCA20D;
-$bad: #F26F0C;
+$good: #c4f500;
+$light: #fce70d;
+$main: #e6b517;
+$strong: #fca20d;
+$bad: #f26f0c;
 
-$background: #FCFADE;
-$text: #8F5B07;
+$background: #fcfade;
+$text: #8f5b07;
 
 // Misc
 $border-radius: 3px;
 $make-light: hue-rotate(15deg) saturate(0.4) brightness(1.5);
+
+@mixin fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+}
