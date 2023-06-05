@@ -38,7 +38,7 @@ fetchUser()
 // ==============================
 
 // Current user
-const { updateCurrentUser } = useUserStore()
+const { updateCurrentUser, deleteUser } = useUserStore()
 const { currentUser: loggedUser } = storeToRefs(useUserStore())
 
 // Whether client has authorization to edit this user's data
@@ -100,7 +100,10 @@ const commitEdit = async () => {
 }
 
 // Stop editing (close modal)
-const stopEdit = () => (editFields.value = [])
+const stopEdit = () => {
+  editFields.value = []
+  confirmDeletion.value = false
+}
 
 // Whether is in the process of editing fields
 const editing = computed(() => editFields.value.length > 0)
@@ -115,13 +118,33 @@ const updateField = (index: number, newField: Field) => {
 const editingIsValid = computed(() =>
   editFields.value.reduce((sum, field) => field.valid && sum, true)
 )
+
+// Whether to ask for delete confirmation
+const confirmDeletion = ref(false)
+
+const deleteAccount = () => {
+  deleteUser().catch(({ code }) => {
+    if (code === 'auth/requires-recent-login') {
+      notify('error', 'Please login again to enable this operation')
+      auth.signOut()
+    }
+  })
+}
 </script>
 
 <template>
   <Transition name="fade">
-    <div v-if="editing" class="overlay" @click.self="stopEdit">
-      <!-- Edit name modal -->
-      <form class="modal" @submit.prevent="commitEdit">
+    <div v-if="editing || confirmDeletion" class="overlay" @click.self="stopEdit">
+      <!-- Delete account modal -->
+      <div v-if="confirmDeletion" class="modal delete-confirm">
+        <span>Delete account? This action is <b>irreversible</b>.</span>
+
+        <button class="confirm" @click="deleteAccount">Delete</button>
+        <button class="cancel" @click="confirmDeletion = false">Cancel</button>
+      </div>
+
+      <!-- Edit fields modal -->
+      <form v-if="editing" class="modal" @submit.prevent="commitEdit">
         <font-awesome-icon class="close-modal" @click="stopEdit" :icon="['fas', 'xmark']" />
 
         <!-- Field indicator -->
@@ -200,7 +223,20 @@ const editingIsValid = computed(() =>
           <span>{{ user.email }}</span>
         </div>
 
-        <button @click="edit(password, passwordConfirmation)">Reset Password</button>
+        <!-- Sign out -->
+        <button @click="auth.signOut">
+          <font-awesome-icon :icon="['fas', 'right-from-bracket']" /> Sign Out
+        </button>
+
+        <!-- Reset password -->
+        <button @click="edit(password, passwordConfirmation)">
+          <font-awesome-icon :icon="['fas', 'key']" /> Reset Password
+        </button>
+
+        <!-- Delete account -->
+        <button @click="confirmDeletion = true" class="delete">
+          <font-awesome-icon :icon="['fas', 'trash-can']" /> Delete Account
+        </button>
       </template>
     </div>
   </main>
@@ -277,6 +313,17 @@ const editingIsValid = computed(() =>
       &:hover {
         translate: 0 -0.1rem;
         filter: brightness(1.2);
+      }
+    }
+
+    &.delete-confirm {
+      span {
+        font-size: 1.2rem;
+      }
+
+      .confirm {
+        background-color: $bad;
+        box-shadow: 0 0.1rem 1px 1px $strong;
       }
     }
   }
@@ -390,6 +437,11 @@ main {
       flex-direction: column;
 
       border-radius: $border-radius;
+    }
+
+    .delete {
+      background-color: $bad;
+      box-shadow: 0 0.1rem 1px 1px $strong;
     }
   }
 

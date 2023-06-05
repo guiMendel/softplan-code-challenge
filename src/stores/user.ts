@@ -102,5 +102,11 @@ export const useUserStore = defineStore('user', () => {
     currentUser.value = await getUser(auth.currentUser.uid)
   }
 
-  return { currentUser, login, signup, getUser, updateCurrentUser }
+  const deleteUser = async () => {
+    if (auth.currentUser == null) return
+
+    return auth.currentUser.delete()
+  }
+
+  return { currentUser, login, signup, getUser, updateCurrentUser, deleteUser }
 })
