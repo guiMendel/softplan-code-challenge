@@ -28,7 +28,7 @@ watch(props, ({ paperId }) => syncPaper(paperId, paper))
 const debounce = 1500
 
 // Current debounce counter
-let debounceTimer: number | null = null
+let debounceTimer: any = null
 
 // Cached content
 const cachedContent = ref('')
