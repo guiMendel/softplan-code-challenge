@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { usePaperAPI } from '@/modules/usePaperAPI'
-import { onBeforeUnmount, ref, watch, watchEffect } from 'vue'
+import { computed, onBeforeUnmount, ref, watch, watchEffect } from 'vue'
+import sanitizeHtml from 'sanitize-html'
+import { marked } from 'marked'
 
 // Grab props
 const props = defineProps<{ paperId: string }>()
@@ -32,6 +34,13 @@ let debounceTimer: number | null = null
 const cachedContent = ref('')
 watchEffect(() => (cachedContent.value = paper.value?.content ?? ''))
 
+// Sets paper content
+const setPaperContent = (newContent: string) => {
+  if (paper.value == null) return
+
+  paper.value = { ...paper.value, content: newContent }
+}
+
 // Handles user input
 const handleInput = (event: Event) => {
   // Debounce input
@@ -44,11 +53,14 @@ const handleInput = (event: Event) => {
     if (paper.value == null) return
 
     // Actually performs an update to the paper
-    paper.value = { ...paper.value, content: cachedContent.value }
+    setPaperContent(cachedContent.value)
 
     debounceTimer = null
   }, debounce)
 }
+
+// Text to render
+const renderContent = computed(() => sanitizeHtml(marked(paper.value?.content ?? '')))
 
 // Ensure to save before unmounting
 onBeforeUnmount(() => {
@@ -57,7 +69,7 @@ onBeforeUnmount(() => {
 
   // Save cached content
   if (paper.value != null && paper.value.content != cachedContent.value)
-    paper.value = { ...paper.value, content: cachedContent.value }
+    setPaperContent(cachedContent.value)
 })
 
 // ===============================
@@ -87,7 +99,7 @@ const panelToggled = ref(false)
     <!-- Drawable panel -->
     <div class="panel-scroller">
       <!-- Output view -->
-      <div id="output-area" v-html="paper.content"></div>
+      <div id="output-area" v-html="renderContent"></div>
     </div>
   </div>
 </template>
@@ -108,7 +120,6 @@ const panelToggled = ref(false)
 
   #input-area,
   #output-area {
-    font-size: 1.1rem;
     font-weight: 500;
     line-height: 1.8rem;
   }
@@ -126,6 +137,7 @@ const panelToggled = ref(false)
     padding: 5rem 2rem 3rem;
 
     font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
 
     box-shadow: inset 0 0 30px 1px $main-trans;
   }
@@ -176,8 +188,16 @@ const panelToggled = ref(false)
 
       flex: 1;
       min-height: 70vh;
+      max-width: 100%;
+
+      word-wrap: break-word;
+
+      overflow: auto;
+
+      flex-direction: column;
 
       text-align: left;
+      font-size: 0.9rem;
 
       background-color: $light;
       border-radius: 0 0 0 $border-radius;
@@ -197,6 +217,14 @@ const panelToggled = ref(false)
     .panel-scroller {
       translate: 100% 0;
     }
+  }
+}
+</style>
+
+<style lang="scss">
+#output-area {
+  h1 {
+    font-family: inherit;
   }
 }
 </style>
