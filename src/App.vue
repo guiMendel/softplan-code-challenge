@@ -4,11 +4,11 @@ import Notifications from './components/Notifications.vue'
 import UserPanel from './components/UserPanel.vue'
 import BackButton from './components/BackButton.vue'
 import { storeToRefs } from 'pinia'
-import { useUserStore } from './stores/currentUser'
+import { useCurrentUserStore } from './stores/currentUser'
 import { computed, ref, watch } from 'vue'
 import InputRequestModal from './components/InputRequestModal.vue'
 
-const { currentUser } = storeToRefs(useUserStore())
+const { currentUser } = storeToRefs(useCurrentUserStore())
 const router = useRouter()
 
 // ===================================================

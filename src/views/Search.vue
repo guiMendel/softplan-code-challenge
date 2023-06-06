@@ -4,8 +4,12 @@ import { computed, ref, watch } from 'vue'
 import UserPreview from '@/components/UserPreview.vue'
 import { useUserAPI } from '@/modules/useUserAPI'
 import type { Highlightable } from '@/modules/highlight'
+import type { Paper } from '@/types/Paper.interface'
+import { usePaperAPI } from '@/modules/usePaperAPI'
+import PaperPreview from '@/components/PaperPreview.vue'
 
-const { syncAllUsers } = useUserAPI()
+const { syncListUsers } = useUserAPI()
+const { syncListPapers } = usePaperAPI()
 
 // Searchbar content
 const query = ref('')
@@ -17,61 +21,66 @@ const showResults = ref<'users' | 'papers'>('users')
 const inputElement = ref<HTMLInputElement | null>(null)
 watch(inputElement, (element) => element?.focus())
 
+interface ResourceResult<Resource> {
+  resource: Resource
+  highlight?: { name?: Highlightable; email?: Highlightable; title?: Highlightable }
+}
+
+// Whether a resource passes the given query
+// Returns ResourceResult if passes, false otherwise
+const filterResource = <Resource>(
+  resource: Resource,
+  query: string,
+  fields: Array<keyof Resource>
+): ResourceResult<Resource> | false => {
+  if (query == '') return { resource }
+
+  // Match on each field
+  for (const field of fields) {
+    let match = (resource[field] as string).toLowerCase().indexOf(query.toLowerCase())
+
+    // Return highlighted field
+    if (match !== -1)
+      return {
+        resource,
+        highlight: { [field]: { text: resource[field], startIndex: match, length: query.length } }
+      }
+  }
+
+  return false
+}
+
 // ======================
 // === USERS
 // ======================
 
-interface UserResult {
-  user: User
-  highlight?: { name?: Highlightable; email?: Highlightable }
-}
-
 // Grab all users
-const users = syncAllUsers()
+const users = syncListUsers()
 
 // Queried users
 const queriedUsers = computed(() => {
   const filterQuery = query.value.trim().toLowerCase()
 
   return users.value
-    .map((user) => filterUser(user, filterQuery))
-    .filter((result) => result !== false) as UserResult[]
+    .map((user) => filterResource(user, filterQuery, ['name', 'email']))
+    .filter((result) => result !== false) as ResourceResult<User>[]
 })
-
-// Whether a user passes the given query
-// Returns UserResult if passes, false otherwise
-const filterUser = (user: User, query: string): UserResult | false => {
-  if (query == '') return { user }
-
-  // Match on name
-  let match = user.name.toLowerCase().indexOf(query.toLowerCase())
-
-  // Return highlighted name
-  if (match !== -1)
-    return {
-      user,
-      highlight: { name: { text: user.name, startIndex: match, length: query.length } }
-    }
-
-  // Match on email
-  match = user.email.toLowerCase().indexOf(query.toLowerCase())
-
-  // Return highlighted email
-  if (match !== -1)
-    return {
-      user,
-      highlight: { email: { text: user.email, startIndex: match, length: query.length } }
-    }
-
-  return false
-}
 
 // ======================
 // === PAPERS
 // ======================
 
+// Grab all papers
+const papers = syncListPapers()
+
 // Queried papers
-const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
+const queriedPapers = computed(() => {
+  const filterQuery = query.value.trim().toLowerCase()
+
+  return papers.value
+    .map((paper) => filterResource(paper, filterQuery, ['title']))
+    .filter((result) => result !== false) as ResourceResult<Paper>[]
+})
 </script>
 
 <template>
@@ -125,15 +134,20 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
       <div :class="showResults !== 'users' && 'mobile-hide'" class="users">
         <UserPreview
           v-for="queryResult in queriedUsers"
-          :key="queryResult.user.uid"
-          :user="queryResult.user"
+          :key="queryResult.resource.uid"
+          :user="queryResult.resource"
           :highlight="queryResult.highlight"
         />
       </div>
 
       <!-- Paper results -->
       <div :class="showResults !== 'papers' && 'mobile-hide'" class="papers">
-        <span v-for="paper in queriedPapers" :key="paper">{{ paper }}</span>
+        <PaperPreview
+          v-for="queryResult in queriedPapers"
+          :key="queryResult.resource.uid"
+          :paper="queryResult.resource"
+          :highlight="queryResult.highlight"
+        />
       </div>
     </div>
   </div>
@@ -284,7 +298,9 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
 
     .users,
     .papers {
-      flex: 1;
+      // background-color: red;
+      
+      flex: 1;  
       max-width: 30rem;
 
       flex-direction: column;
@@ -300,16 +316,6 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
         &.mobile-hide {
           display: none;
         }
-      }
-    }
-
-    .papers {
-      > * {
-        text-align: left;
-
-        background-color: $main-trans;
-
-        padding: 0.5rem 0.8rem;
       }
     }
   }

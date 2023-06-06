@@ -11,8 +11,9 @@ import {
   updateProfile
 } from 'firebase/auth'
 import { useUserAPI } from '@/modules/useUserAPI'
+import type { UploadableEntry } from '@/modules/useResourceAPI'
 
-export const useUserStore = defineStore('currentUser', () => {
+export const useCurrentUserStore = defineStore('currentUser', () => {
   // Consume user api module
   const { syncUser, desyncUser, getUserDocRef } = useUserAPI()
 
@@ -42,8 +43,10 @@ export const useUserStore = defineStore('currentUser', () => {
       // Set its name
       updateProfile(user, { displayName: name })
 
+      const date = new Date().toJSON()
+
       // Set its database entry
-      setDoc(getUserDocRef(user.uid), { name, email, createdAt: new Date().toJSON() })
+      setDoc(getUserDocRef(user.uid), { name, email, createdAt: date, modifiedAt: date })
 
       return user
     })
@@ -63,7 +66,7 @@ export const useUserStore = defineStore('currentUser', () => {
       await updateProfile(auth.currentUser, { displayName: newData.name })
 
     // Set database data
-    const databaseData: Omit<Partial<UserDatabase>, 'createdAt'> = {}
+    const databaseData: UploadableEntry<UserDatabase> = { modifiedAt: new Date().toJSON() }
 
     if (newData.name != undefined) databaseData.name = newData.name
     if (newData.about != undefined) databaseData.about = newData.about

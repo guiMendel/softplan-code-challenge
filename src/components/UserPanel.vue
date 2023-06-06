@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useUserStore } from '@/stores/currentUser'
+import { useCurrentUserStore } from '@/stores/currentUser'
 import { storeToRefs } from 'pinia'
 import UserProfilePicture from './UserProfilePicture.vue'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
-const { currentUser } = storeToRefs(useUserStore())
+const { currentUser } = storeToRefs(useCurrentUserStore())
 
 const route = useRoute()
 

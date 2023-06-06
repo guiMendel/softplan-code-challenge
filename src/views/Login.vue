@@ -2,7 +2,7 @@
 import InputField from '@/components/InputField.vue'
 import { useUserField } from '@/modules/useUserField'
 import { useNotificationsStore } from '@/stores/notifications'
-import { useUserStore } from '@/stores/currentUser'
+import { useCurrentUserStore } from '@/stores/currentUser'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -15,7 +15,7 @@ const formIsValid = computed(() => email.value.valid && password.value.valid)
 const router = useRouter()
 
 const { notify } = useNotificationsStore()
-const { login } = useUserStore()
+const { login } = useCurrentUserStore()
 const { getErrorForCode } = useUserField()
 
 // Login action

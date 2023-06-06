@@ -30,7 +30,7 @@ const highlightField = (field: 'name' | 'email') => {
       <p v-html="highlightField('name')" class="name"></p>
 
       <!-- Email -->
-      <p v-html="highlightField('email')" class="email"></p>
+      <small v-html="highlightField('email')" class="email"></small>
     </div>
   </div>
 </template>
@@ -39,31 +39,6 @@ const highlightField = (field: 'name' | 'email') => {
 @import '../style/variables.scss';
 
 .user-preview {
-  align-items: center;
-
-  min-width: 10rem;
-
-  padding: 0.6rem 1rem;
-
-  border-radius: $border-radius;
-  background-color: $main-trans;
-  gap: 1rem;
-  cursor: pointer;
-
-  .text {
-    flex-direction: column;
-    gap: 0.2rem;
-    .name {
-      font-size: 1.1rem;
-    }
-
-    .email {
-      color: $main;
-    }
-  }
-
-  &:hover {
-    filter: brightness(1.1);
-  }
+  @include preview;
 }
 </style>

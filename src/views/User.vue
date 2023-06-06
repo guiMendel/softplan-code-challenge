@@ -4,7 +4,7 @@ import UserProfilePicture from '@/components/UserProfilePicture.vue'
 import { useUserField, type Field } from '@/modules/useUserField'
 import { useInputStore } from '@/stores/input'
 import { useNotificationsStore } from '@/stores/notifications'
-import { useUserStore } from '@/stores/currentUser'
+import { useCurrentUserStore } from '@/stores/currentUser'
 import type { User } from '@/types/User.interface'
 import { storeToRefs } from 'pinia'
 import { computed, watch, watchEffect } from 'vue'
@@ -17,7 +17,7 @@ const { getInput, getConfirmation } = useInputStore()
 // === USER DATA
 // ==============================
 
-const { login } = useUserStore()
+const { login } = useCurrentUserStore()
 const { syncUser } = useUserAPI()
 
 const props = defineProps<{ userId: User['uid'] }>()
@@ -59,8 +59,8 @@ const confirmLogin = async () => {
 // ==============================
 
 // Current user
-const { updateCurrentUser, deleteUser } = useUserStore()
-const { currentUser: loggedUser } = storeToRefs(useUserStore())
+const { updateCurrentUser, deleteUser } = useCurrentUserStore()
+const { currentUser: loggedUser } = storeToRefs(useCurrentUserStore())
 
 // Whether client has authorization to edit this user's data
 const canEdit = computed(() => loggedUser.value != null && loggedUser.value.uid === user.value?.uid)

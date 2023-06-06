@@ -5,9 +5,15 @@ import {
   type DocumentData,
   type DocumentSnapshot,
   type QueryDocumentSnapshot,
-  collection
+  collection,
+  query,
+  CollectionReference
 } from 'firebase/firestore'
 import { onBeforeUnmount, ref, type Ref } from 'vue'
+
+export type UploadableEntry<Resource> = Omit<Omit<Partial<Resource>, 'createdAt'>, 'modifiedAt'> & {
+  modifiedAt: string
+}
 
 // Allows for syncing to resources in firestore
 export const useResourceAPI = <Resource>(
@@ -57,8 +63,11 @@ export const useResourceAPI = <Resource>(
     return resource
   }
 
+  // Allows for setting a query builder for the syncListResources method
+  const getListQuery = ref((collection: CollectionReference<DocumentData>) => query(collection))
+
   // Get all resources
-  const syncAllResources = (): Ref<Resource[]> => {
+  const syncListResources = (): Ref<Resource[]> => {
     const resources = ref<Resource[]>([]) as Ref<Resource[]>
 
     // Disable last call
@@ -66,7 +75,7 @@ export const useResourceAPI = <Resource>(
 
     // Listen for changes to resources
     unsubscribe.resources = onSnapshot(
-      collection(db, resourceCollection),
+      getListQuery.value(collection(db, resourceCollection)),
       // Map in a resource fo each doc
       (snapshot) => (resources.value = snapshot.docs.map(snapshotToResource) as Resource[])
     )
@@ -84,5 +93,5 @@ export const useResourceAPI = <Resource>(
     unsubscribe.resource()
   })
 
-  return { syncResource, desyncResource, syncAllResources, getResourceDocRef }
+  return { syncResource, desyncResource, syncListResources, getResourceDocRef, getListQuery }
 }

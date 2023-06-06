@@ -7,6 +7,7 @@ export interface UserDatabase {
   name: string
   email: string
   createdAt: Date
+  modifiedAt: Date
   admin?: boolean
 
   // Customization

@@ -2,7 +2,7 @@
 import InputField from '@/components/InputField.vue'
 import { useUserField } from '@/modules/useUserField'
 import { useNotificationsStore } from '@/stores/notifications'
-import { useUserStore } from '@/stores/currentUser'
+import { useCurrentUserStore } from '@/stores/currentUser'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -29,7 +29,7 @@ const formIsValid = computed(
 const router = useRouter()
 
 const { notify } = useNotificationsStore()
-const { signup } = useUserStore()
+const { signup } = useCurrentUserStore()
 
 const submit = () => {
   if (formIsValid.value == false) return

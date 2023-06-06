@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
+import PaperPreview from '@/components/PaperPreview.vue'
+import { usePaperAPI } from '@/modules/usePaperAPI'
 
-const router = useRouter()
+const { syncListPapers } = usePaperAPI()
+
+const papers = syncListPapers()
 </script>
 
 <template>
@@ -19,7 +22,9 @@ const router = useRouter()
         <span class="new-paper"><font-awesome-icon :icon="['fas', 'plus']" /> create </span>
       </header>
 
+      <!-- Index papers -->
       <div class="papers">
+        <PaperPreview v-for="paper in papers" :key="paper.uid" :paper="paper" />
       </div>
     </div>
   </div>
@@ -80,76 +85,6 @@ const router = useRouter()
       width: 100%;
       flex-direction: column;
       gap: 1rem;
-
-      .paper {
-        position: relative;
-
-        padding: 0.5rem 1rem;
-        width: 100%;
-        max-width: 25rem;
-
-        align-items: center;
-        gap: 0.3rem;
-
-        border-radius: $border-radius;
-
-        cursor: pointer;
-
-        transition: all 100ms;
-
-        background-color: $main-trans;
-
-        .icon {
-          font-size: 1.3rem;
-        }
-
-        .text {
-          flex: 1;
-          text-align: left;
-
-          flex-direction: column;
-          gap: 0.2rem;
-
-          .title {
-            font-weight: 600;
-          }
-
-          small {
-            color: $main;
-            filter: brightness(0.8);
-          }
-        }
-
-        .options {
-          margin-right: -0.3rem;
-
-          @include light-button;
-
-          color: $main;
-
-          width: 1.5rem;
-          aspect-ratio: 1/1;
-          border-radius: 50%;
-
-          // display: flex;
-          // align-items: center;
-          // justify-content: center;
-
-          // background-color: $transparent;
-
-          // transition: all 100ms;
-
-          // &:hover {
-          //   filter: brightness(0.8);
-
-          //   background-color: $main-trans;
-          // }
-        }
-
-        &:hover {
-          filter: brightness(1.1);
-        }
-      }
     }
   }
 }

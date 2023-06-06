@@ -52,3 +52,40 @@ $make-light: hue-rotate(15deg) saturate(0.4) brightness(1.5);
     box-shadow: 0 0 0 0.5rem $main-trans;
   }
 }
+
+@mixin preview {
+  min-width: 10rem;
+
+  padding: 0.6rem 1rem;
+  border-radius: $border-radius;
+  background-color: $main-trans;
+
+  align-items: center;
+  gap: 1rem;
+
+  cursor: pointer;
+
+  transition: all 100ms;
+
+  .text {
+    flex: 1;
+
+    flex-direction: column;
+    gap: 0.2rem;
+
+    text-align: left;
+
+    p {
+      font-weight: 600;
+    }
+
+    small {
+      color: $main;
+      font-weight: 600;
+    }
+  }
+
+  &:hover {
+    filter: brightness(1.1);
+  }
+}
