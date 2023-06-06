@@ -6,6 +6,7 @@ import { useCurrentUserStore } from '@/stores/currentUser'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePaperAPI } from '@/modules/usePaperAPI'
+import gettingStartedPaper from '@/assets/gettingStartedPaper'
 
 // ================================================
 // ==== FORM
@@ -43,7 +44,7 @@ const submit = () => {
     // Redirect to home
     .then(() => {
       // Add initial paper
-      createPaper('Getting Started', "Great to see you here! Let's show you around.")
+      createPaper('Getting Started', gettingStartedPaper)
 
       // Navigate home
       router.push({ name: 'home' })

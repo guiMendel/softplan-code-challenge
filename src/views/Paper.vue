@@ -237,6 +237,7 @@ const panelToggled = ref(false)
       #output-area {
         margin: 0;
         font-size: 1rem;
+        min-height: 100vh;
       }
     }
   }
