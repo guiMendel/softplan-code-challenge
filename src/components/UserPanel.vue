@@ -9,13 +9,13 @@ const { currentUser } = storeToRefs(useUserStore())
 
 const route = useRoute()
 
-const isUserPage = computed(() => route.name == 'user')
+const shouldHide = computed(() => route.meta.noUserPanel === true)
 </script>
 
 <template>
   <RouterLink
     :to="{ name: 'user', params: { userId: currentUser.uid } }"
-    v-if="currentUser != null && isUserPage == false"
+    v-if="currentUser != null && shouldHide == false"
     id="user-panel"
   >
     <!-- Show name -->
@@ -33,7 +33,7 @@ const isUserPage = computed(() => route.name == 'user')
 
 #user-panel {
   z-index: 40;
-  
+
   display: flex;
   color: inherit;
 

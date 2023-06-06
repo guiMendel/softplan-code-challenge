@@ -21,7 +21,8 @@ import {
   faMagnifyingGlass,
   faFolder,
   faFile,
-  faUsers
+  faUsers,
+  faEye
 } from '@fortawesome/free-solid-svg-icons'
 
 /* Add icons to the library */
@@ -38,7 +39,8 @@ library.add(
   faMagnifyingGlass,
   faFolder,
   faFile,
-  faUsers
+  faUsers,
+  faEye
 )
 
 import App from './App.vue'

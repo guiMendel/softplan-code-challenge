@@ -17,7 +17,7 @@ const router = useRouter()
   top: 1rem;
   left: 1rem;
 
-  font-size: 1.5rem;
+  font-size: 1.3rem;
 
   cursor: pointer;
 

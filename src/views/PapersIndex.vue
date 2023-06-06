@@ -1,3 +1,9 @@
+<script setup lang="ts">
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+</script>
+
 <template>
   <div class="papers-index">
     <!-- Current user's papers -->
@@ -14,7 +20,7 @@
       </header>
 
       <div class="papers">
-        <div class="paper">
+        <div class="paper" @click="router.push({ name: 'paper' })">
           <!-- Paper icon -->
           <span class="icon">🎯</span>
 

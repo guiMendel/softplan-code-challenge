@@ -4,6 +4,7 @@ import Login from '../views/Login.vue'
 import Signup from '../views/Signup.vue'
 import User from '../views/User.vue'
 import PapersIndex from '../views/PapersIndex.vue'
+import Paper from '@/views/Paper.vue'
 import Search from '../views/Search.vue'
 import { navigationGuard } from './navigationGuard'
 
@@ -45,7 +46,13 @@ const router = createRouter({
       name: 'user',
       component: User,
       props: true,
-      meta: { requiresAuth: true, hasBackButton: true }
+      meta: { requiresAuth: true, hasBackButton: true, noUserPanel: true }
+    },
+    {
+      path: '/paper',
+      name: 'paper',
+      component: Paper,
+      meta: { requiresAuth: true, hasBackButton: true, noUserPanel: true }
     }
   ]
 })
