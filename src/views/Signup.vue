@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { auth } from '@/api/firebase'
 import InputField from '@/components/InputField.vue'
 import { useUserField } from '@/modules/useUserField'
 import { useNotificationsStore } from '@/stores/notifications'
-import { useUserStore } from '@/stores/user'
-import { createUserWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'firebase/auth'
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { useUserStore } from '@/stores/currentUser'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 // ========================

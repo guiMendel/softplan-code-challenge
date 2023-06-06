@@ -4,7 +4,7 @@ import Notifications from './components/Notifications.vue'
 import UserPanel from './components/UserPanel.vue'
 import BackButton from './components/BackButton.vue'
 import { storeToRefs } from 'pinia'
-import { useUserStore } from './stores/user'
+import { useUserStore } from './stores/currentUser'
 import { computed, ref, watch } from 'vue'
 import InputRequestModal from './components/InputRequestModal.vue'
 

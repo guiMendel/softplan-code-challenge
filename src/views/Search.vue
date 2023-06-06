@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { User } from '@/types/User.interface'
-import { useUserStore } from '@/stores/user'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import UserPreview from '@/components/UserPreview.vue'
+import { useUserAPI } from '@/modules/useUserAPI'
 
-const { getAllUsers } = useUserStore()
+const { syncAllUsers } = useUserAPI()
 
 // Searchbar content
 const query = ref('')
@@ -33,16 +33,16 @@ interface UserResult {
 }
 
 // Grab all users
-const users = ref<User[]>([])
-
-// Initialize them
-getAllUsers().then((newUsers) => {
-  users.value = newUsers
-  queriedUsers.value = queryUsers(query.value)
-})
+const users = syncAllUsers()
 
 // Queried users
-const queriedUsers = ref<UserResult[]>([])
+const queriedUsers = computed(() => {
+  const filterQuery = query.value.trim().toLowerCase()
+
+  return users.value
+    .map((user) => filterUser(user, filterQuery))
+    .filter((result) => result !== false) as UserResult[]
+})
 
 // Whether a user passes the given query
 // Returns UserResult if passes, false otherwise
@@ -64,17 +64,6 @@ const filterUser = (user: User, query: string): UserResult | false => {
 
   return false
 }
-
-const queryUsers = (query: string): UserResult[] => {
-  const filterQuery = query.trim().toLowerCase()
-
-  return users.value
-    .map((user) => filterUser(user, filterQuery))
-    .filter((result) => result !== false) as UserResult[]
-}
-
-// Query users when query changes
-watch(query, (newQuery) => (queriedUsers.value = queryUsers(newQuery)))
 
 // ======================
 // === PAPERS
@@ -264,7 +253,7 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
 
     @media (min-width: 768px) {
       justify-content: space-around;
-      
+
       > span {
         background: none;
         cursor: default;
@@ -316,7 +305,7 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
     .papers {
       > * {
         text-align: left;
-        
+
         background-color: $main-trans;
 
         padding: 0.5rem 0.8rem;

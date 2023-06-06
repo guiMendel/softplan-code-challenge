@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/currentUser'
 import { storeToRefs } from 'pinia'
 import UserProfilePicture from './UserProfilePicture.vue'
 import { computed } from 'vue'

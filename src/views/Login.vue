@@ -2,8 +2,7 @@
 import InputField from '@/components/InputField.vue'
 import { useUserField } from '@/modules/useUserField'
 import { useNotificationsStore } from '@/stores/notifications'
-import { useUserStore } from '@/stores/user'
-import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/currentUser'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 

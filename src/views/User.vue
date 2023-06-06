@@ -5,10 +5,11 @@ import UserProfilePicture from '@/components/UserProfilePicture.vue'
 import { useUserField, type Field } from '@/modules/useUserField'
 import { useInputStore } from '@/stores/input'
 import { useNotificationsStore } from '@/stores/notifications'
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/currentUser'
 import type { User } from '@/types/User.interface'
 import { storeToRefs } from 'pinia'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
+import { useUserAPI } from '@/modules/useUserAPI'
 
 // Get input methods
 const { getInput, getConfirmation } = useInputStore()
@@ -17,25 +18,16 @@ const { getInput, getConfirmation } = useInputStore()
 // === USER DATA
 // ==============================
 
-const { getUser, login } = useUserStore()
+const { login } = useUserStore()
+const { syncUser } = useUserAPI()
 
 const props = defineProps<{ userId: User['uid'] }>()
 
 // Get user
-const user = ref<User | null>(null)
-
-// Keep the user synced
-const fetchUser = async () => {
-  user.value = await getUser(props.userId)
-
-  if (user.value != null) setFields(user.value)
-}
+const user = syncUser(props.userId)
 
 // Whenever id changes
-watch(props, fetchUser)
-
-// And when page loads up
-fetchUser()
+watch(props, ({ userId }) => syncUser(userId, user))
 
 // ==============================
 // === CONFIRMING LOGIN
@@ -80,12 +72,14 @@ const { name, email, password, passwordConfirmation, about, color } = useUserFie
 const { notify } = useNotificationsStore()
 
 // Set the fields for the user
-const setFields = (user: User) => {
-  name.value.value = user.name
-  email.value.value = user.email
-  about.value.value = user.about ?? ''
-  color.value.value = user.color ?? '#FCA20D'
-}
+watchEffect(() => {
+  if (user.value == null) return
+
+  name.value.value = user.value.name
+  email.value.value = user.value.email
+  about.value.value = user.value.about ?? ''
+  color.value.value = user.value.color ?? '#FCA20D'
+})
 
 // Start editing fields
 const edit = (...fields: Field[]) => {
@@ -117,9 +111,6 @@ const edit = (...fields: Field[]) => {
 
       // Notify client
       notify('success', 'User updated')
-
-      // Update local data
-      fetchUser()
     })
 
     // If canceled, ignore
