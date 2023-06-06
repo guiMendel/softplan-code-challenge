@@ -1,6 +1,14 @@
 # softplan-code-challenge
 
-This template should help get you started developing with Vue 3 in Vite.
+Step right up and behold my mighty code challenge submission!
+
+Prepare for an electrifying experience as I guide you through the exhilarating process of deploying this bad boy. Brace yourself for two options: a local deployment or the daring remote deploy over at https://softplan-code-challenge.vercel.app/. The choice is yours!
+
+Get ready to unleash your creative prowess with this extraordinary markdown editing app. Collaborate, showcase your genius, and bask in the glory of sharing your work with others. But alas, in the blink of an eye, I confess that paper sharing remains a work in progress. Fear not, for everything else dances to the tune of perfection!
+
+Behold the power of CRUD! Users and papers bow before its majestic might. Create an account, and with a single click on your profile name, you can edit or banish your account to oblivion. Feeling adventurous? Click that search button on the homepage to embark on a thrilling quest to discover other users and unearth your treasured papers.
+
+Let the coding adventure begin!
 
 ## Recommended IDE Setup
 
