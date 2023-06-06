@@ -118,10 +118,15 @@ const panelToggled = ref(false)
 
   $panel-shadow: 0.3rem 0.3rem 2px 2px $main-trans;
 
+  @media (min-width: 768px) {
+    flex-direction: row;
+
+    align-items: stretch;
+  }
+
   #input-area,
   #output-area {
     font-weight: 500;
-    line-height: 1.8rem;
   }
 
   #input-area {
@@ -138,8 +143,15 @@ const panelToggled = ref(false)
 
     font-family: 'Space Mono', monospace;
     font-size: 1.1rem;
+    line-height: 1.8rem;
 
     box-shadow: inset 0 0 30px 1px $main-trans;
+
+    @media (min-width: 768px) {
+      width: unset;
+
+      height: 100vh;
+    }
   }
 
   #panel-drawer {
@@ -168,6 +180,10 @@ const panelToggled = ref(false)
 
     &:hover {
       filter: brightness(0.95);
+    }
+
+    @media (min-width: 768px) {
+      display: none;
     }
   }
 
@@ -207,6 +223,22 @@ const panelToggled = ref(false)
 
       z-index: 10;
     }
+
+    @media (min-width: 768px) {
+      position: relative;
+
+      top: unset;
+      right: unset;
+
+      width: unset;
+
+      flex: 1;
+
+      #output-area {
+        margin: 0;
+        font-size: 1rem;
+      }
+    }
   }
 
   &.panel-hidden {
@@ -216,15 +248,84 @@ const panelToggled = ref(false)
 
     .panel-scroller {
       translate: 100% 0;
+
+      @media (min-width: 768px) {
+        translate: 0;
+      }
     }
   }
 }
 </style>
 
 <style lang="scss">
-#output-area {
+@import '../style/variables.scss';
+
+#paper .panel-scroller #output-area {
+  * {
+    margin-block: 0.5rem;
+    width: 100%;
+    max-width: 100%;
+    word-wrap: break-word;
+  }
+
+  h1,
+  h2 {
+    margin-block: 2rem;
+
+    padding-bottom: 1rem;
+    border-bottom: 2px solid $main-trans;
+  }
+
+  h3,
+  h4 {
+    margin-block: 1rem;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Patua One', display;
+
+    font-weight: 700;
+  }
+
   h1 {
-    font-family: inherit;
+    font-size: 2.2rem;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+  }
+
+  p {
+    line-height: 1.5rem;
+  }
+
+  b,
+  strong {
+    font-weight: 900;
+  }
+
+  ul {
+    padding-left: 1.5rem;
+  }
+
+  blockquote {
+    padding-left: 1rem;
+    border-left: 5px solid $strong-trans;
+
+    padding-block: 0.1rem;
+
+    color: $strong;
+
+    filter: brightness(0.9);
+  }
+
+  a {
+    font-weight: 800;
   }
 }
 </style>
