@@ -47,7 +47,7 @@ export const useUserField = () => {
     valid: false,
     validate: (newValue: string) => {
       if (/.+@.+\..+/.test(newValue) == false) return 'Invalid email'
-      if (newValue.length > 20) return 'Too many characters'
+      if (newValue.length > 100) return 'Too many characters'
 
       for (const reason in invalidEmails.value)
         if (invalidEmails.value[reason as keyof invalidEmailsType].includes(newValue))
@@ -63,7 +63,7 @@ export const useUserField = () => {
     valid: false,
     validate: (newValue: string) => {
       if (newValue.length < 6) return 'Password needs at least 6 characters'
-      if (newValue.length > 20) return 'Too many characters'
+      if (newValue.length > 100) return 'Too many characters'
 
       return true
     }
@@ -97,7 +97,7 @@ export const useUserField = () => {
     validate: (newValue: string) => {
       if (newValue.length < 3) return 'Name needs at least 3 characters'
       if (/.+ .+/.test(newValue) == false) return 'Please provide first and last name'
-      if (newValue.length > 20) return 'Too many characters'
+      if (newValue.length > 100) return 'Too many characters'
 
       return true
     }
