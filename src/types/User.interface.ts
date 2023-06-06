@@ -3,12 +3,13 @@ export interface User extends UserDatabase {
 }
 
 export interface UserDatabase {
+  // Account details
   name: string
   email: string
-
   createdAt: Date
+  admin?: boolean
 
+  // Customization
   color?: string
   about?: string
-  admin?: boolean
 }
