@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { usePaperAPI } from '@/modules/usePaperAPI'
-import { ref, watch } from 'vue'
+import { onBeforeUnmount, ref, watch, watchEffect } from 'vue'
 
 // Grab props
 const props = defineProps<{ paperId: string }>()
@@ -8,25 +8,76 @@ const props = defineProps<{ paperId: string }>()
 // Consume papers api
 const { syncPaper } = usePaperAPI()
 
+// Input reference
+const inputReference = ref<HTMLTextAreaElement | null>(null)
+watch(inputReference, (element) => element?.focus())
+
+// ===============================
+// === PAPER INSTANCE UPDATING
+// ===============================
+
 // Grab referenced paper
 const paper = syncPaper(props.paperId)
 
 // Whenever id changes
 watch(props, ({ paperId }) => syncPaper(paperId, paper))
 
-// // Content input by user
-// const textContent = ref('')
+// How much debounce to apply to user input
+const debounce = 1500
+
+// Current debounce counter
+let debounceTimer: number | null = null
+
+// Cached content
+const cachedContent = ref('')
+watchEffect(() => (cachedContent.value = paper.value?.content ?? ''))
+
+// Handles user input
+const handleInput = (event: Event) => {
+  // Debounce input
+  if (debounceTimer != null) clearTimeout(debounceTimer)
+
+  // Cache content
+  cachedContent.value = (event.target as HTMLTextAreaElement).value
+
+  debounceTimer = setTimeout(() => {
+    if (paper.value == null) return
+
+    // Actually performs an update to the paper
+    paper.value = { ...paper.value, content: cachedContent.value }
+
+    debounceTimer = null
+  }, debounce)
+}
+
+// Ensure to save before unmounting
+onBeforeUnmount(() => {
+  // Clear any timeouts
+  if (debounceTimer != null) clearTimeout(debounceTimer)
+
+  // Save cached content
+  if (paper.value != null && paper.value.content != cachedContent.value)
+    paper.value = { ...paper.value, content: cachedContent.value }
+})
+
+// ===============================
+// === UI EXPERIENCE
+// ===============================
 
 // Whether the panel is toggled
-const panelToggled = ref(false)
 
-// Listen
+const panelToggled = ref(false)
 </script>
 
 <template>
   <div v-if="paper != null" id="paper" :class="panelToggled == false && 'panel-hidden'">
     <!-- Input field -->
-    <textarea autofocus id="input-area" v-model="paper.content"></textarea>
+    <textarea
+      ref="inputReference"
+      id="input-area"
+      :value="paper.content"
+      @input="handleInput"
+    ></textarea>
 
     <!-- Draw button -->
     <div id="panel-drawer" @click="panelToggled = !panelToggled">

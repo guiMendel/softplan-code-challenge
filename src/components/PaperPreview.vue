@@ -20,11 +20,16 @@ const highlightField = (field: 'title') => {
 const timestamp = computed(() => {
   type timeUnit = 'second' | 'minute' | 'hour'
 
-  const actionWord = props.paper.modifiedAt.getTime() == props.paper.createdAt.getTime() ? 'created' : 'last modified'
+  const actionWord =
+    props.paper.modifiedAt.getTime() == props.paper.createdAt.getTime()
+      ? 'created'
+      : 'last modified'
 
   const pronounFor = (timeType: timeUnit) => (timeType === 'hour' ? 'an' : 'a')
 
   const formatAs = (timeType: timeUnit, value: number) => {
+    if (value == 0) return `${actionWord} now`
+
     return `${actionWord} ${value === 1 ? pronounFor(timeType) : value} ${timeType}${
       value === 1 ? '' : 's'
     } ago`

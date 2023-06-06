@@ -53,6 +53,8 @@ export const usePaperAPI = () => {
       // Will update the synced paper's data. To sync to a different paper,
       // must call syncPaper again and provide the new paper's id
       set: (newPaper) => {
+        console.log('Setting...')
+
         // Ignore setting to null or to an desynced paper
         if (newPaper == null || paper.value == null) return
 
@@ -64,6 +66,8 @@ export const usePaperAPI = () => {
         if (newPaper.ownerUid != undefined) securedData.ownerUid = newPaper.ownerUid
 
         securedData.modifiedAt = new Date().toJSON()
+
+        console.log('Updating paper to:', JSON.parse(JSON.stringify(securedData)))
 
         updateDoc(getResourceDocRef(paper.value.uid), securedData)
       }
