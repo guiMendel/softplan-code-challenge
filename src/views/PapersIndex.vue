@@ -4,9 +4,10 @@
     <div class="user-section">
       <header>
         <!-- Section title -->
-        <h2>Your Papers</h2>
-
-        <span class="paper-count">1</span>
+        <div class="text">
+          <h2>Your Papers</h2>
+          <span class="paper-count">1</span>
+        </div>
 
         <!-- Create paper button -->
         <span class="new-paper"><font-awesome-icon :icon="['fas', 'plus']" /> create </span>
@@ -53,18 +54,32 @@
 
     header {
       width: 100%;
+      max-width: 16rem;
 
       align-items: center;
+      justify-content: space-between;
 
-      h2 {
-        font-weight: 600;
-      }
+      .text {
+        align-items: center;
+        gap: 0.5rem;
 
-      .paper-count {
-        color: $main;
-        font-weight: 600;
+        h2 {
+          font-weight: 600;
+        }
 
-        margin-inline: 0.5rem 2rem;
+        .paper-count {
+          background-color: $main-trans;
+
+          aspect-ratio: 1/1;
+          width: 1.3rem;
+          border-radius: 50%;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          color: $main;
+        }
       }
 
       .new-paper {

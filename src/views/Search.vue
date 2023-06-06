@@ -132,7 +132,7 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
     <!-- Query results -->
     <div class="results">
       <!-- User results -->
-      <div v-if="showResults === 'users'" class="users">
+      <div :class="showResults !== 'users' && 'mobile-hide'" class="users">
         <UserPreview
           v-for="queryResult in queriedUsers"
           :key="queryResult.user.uid"
@@ -142,7 +142,7 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
       </div>
 
       <!-- Paper results -->
-      <div v-if="showResults === 'papers'" class="papers">
+      <div :class="showResults !== 'papers' && 'mobile-hide'" class="papers">
         <span v-for="paper in queriedPapers" :key="paper">{{ paper }}</span>
       </div>
     </div>
@@ -261,10 +261,34 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
         color: $strong;
       }
     }
+
+    @media (min-width: 768px) {
+      justify-content: space-around;
+      
+      > span {
+        background: none;
+        cursor: default;
+
+        &:hover {
+          background: none;
+          box-shadow: none;
+        }
+
+        &.active {
+          background: none;
+          box-shadow: none;
+
+          color: $main;
+        }
+      }
+    }
   }
 
   .results {
     width: 100%;
+    justify-content: space-around;
+
+    gap: 4rem;
 
     padding-inline: 2rem;
 
@@ -280,6 +304,22 @@ const queriedPapers = ref<string[]>(['Paper 1', 'Paper 2'])
 
       > * {
         width: 100%;
+      }
+
+      @media (max-width: 768px) {
+        &.mobile-hide {
+          display: none;
+        }
+      }
+    }
+
+    .papers {
+      > * {
+        text-align: left;
+        
+        background-color: $main-trans;
+
+        padding: 0.5rem 0.8rem;
       }
     }
   }

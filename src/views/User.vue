@@ -202,7 +202,7 @@ const requestDelete = () =>
       </div>
 
       <!-- Account details -->
-      <template v-if="canEdit">
+      <div class="account" v-if="canEdit">
         <!-- Sign out -->
         <button @click="auth.signOut">
           <font-awesome-icon :icon="['fas', 'right-from-bracket']" /> Sign Out
@@ -217,7 +217,7 @@ const requestDelete = () =>
         <button @click="requestDelete" class="delete">
           <font-awesome-icon :icon="['fas', 'trash-can']" /> Delete Account
         </button>
-      </template>
+      </div>
     </div>
   </main>
 </template>
@@ -240,7 +240,7 @@ main {
   small {
     color: $main;
   }
-  
+
   .editable {
     cursor: pointer;
 
@@ -306,15 +306,17 @@ main {
   }
 
   .details {
-    flex-direction: column;
-    min-width: 13rem;
-    max-width: min(80%, 30rem);
+    flex-wrap: wrap;
+    justify-content: center;
+
+    width: 90%;
 
     gap: 2rem;
     font-size: 1.2rem;
 
     > * {
-      width: 100%;
+      // width: 100%;
+      min-width: 10rem;
     }
 
     .join-date {
@@ -342,6 +344,21 @@ main {
     .delete {
       background-color: $bad;
       box-shadow: 0 0.1rem 1px 1px $strong;
+    }
+
+    .account {
+      flex-direction: column;
+      gap: inherit;
+    }
+
+    @media (max-width: 768px) {
+      min-width: 13rem;
+      max-width: 85%;
+
+      > * {
+        width: 100%;
+        min-width: unset;
+      }
     }
   }
 
