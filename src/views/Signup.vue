@@ -5,10 +5,11 @@ import { useNotificationsStore } from '@/stores/notifications'
 import { useCurrentUserStore } from '@/stores/currentUser'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { usePaperAPI } from '@/modules/usePaperAPI'
 
-// ========================
+// ================================================
 // ==== FORM
-// ========================
+// ================================================
 
 // Fields
 const { name, email, invalidateEmail, password: newPassword, passwordConfirmation } = useUserField()
@@ -22,14 +23,15 @@ const formIsValid = computed(
     passwordConfirmation.value.valid
 )
 
-// ========================
+// ================================================
 // ==== SUBMISSION
-// ========================
+// ================================================
 
 const router = useRouter()
 
 const { notify } = useNotificationsStore()
 const { signup } = useCurrentUserStore()
+const { createPaper } = usePaperAPI()
 
 const submit = () => {
   if (formIsValid.value == false) return
@@ -39,7 +41,13 @@ const submit = () => {
   // Create the user
   signup(emailValue, newPassword.value.value, name.value.value)
     // Redirect to home
-    .then(() => router.push({ name: 'home' }))
+    .then(() => {
+      // Add initial paper
+      createPaper('Getting Started', "Great to see you here! Let's show you around.")
+
+      // Navigate home
+      router.push({ name: 'home' })
+    })
     // Handle errors
     .catch(({ code, message }) => {
       console.log('Signup failed! ' + message)

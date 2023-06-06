@@ -157,7 +157,7 @@ const queriedPapers = computed(() => {
 @import '../style/variables.scss';
 
 .search {
-  margin-top: 2rem;
+  margin-block: 2rem;
 
   flex-direction: column;
   align-items: center;

@@ -2,7 +2,7 @@
 import PaperPreview from '@/components/PaperPreview.vue'
 import { usePaperAPI } from '@/modules/usePaperAPI'
 
-const { syncListPapers } = usePaperAPI()
+const { syncListPapers, createPaper } = usePaperAPI()
 
 const papers = syncListPapers()
 </script>
@@ -14,8 +14,8 @@ const papers = syncListPapers()
       <header>
         <!-- Section title -->
         <div class="text">
-          <h2>Your Papers</h2>
-          <span class="paper-count">1</span>
+          <h2 @click="createPaper('test', 'testing boy')">Your Papers</h2>
+          <span class="paper-count">{{ papers.length }}</span>
         </div>
 
         <!-- Create paper button -->

@@ -1,27 +1,42 @@
 import type { Paper, PaperDatabase } from '@/types/Paper.interface'
-import { useResourceAPI, type UploadableEntry } from './useResourceAPI'
+import {
+  useResourceAPI,
+  type UploadableEntry,
+  type UploadableEntryComplete
+} from './useResourceAPI'
 import { computed, watch, type Ref, watchEffect } from 'vue'
-import { collection, query, updateDoc, where } from 'firebase/firestore'
+import { addDoc, collection, query, updateDoc, where } from 'firebase/firestore'
 import { useCurrentUserStore } from '@/stores/currentUser'
 import { storeToRefs } from 'pinia'
 
 export const usePaperAPI = () => {
   // Get simple sync functionalities
-  const { syncResource, desyncResource, syncListResources, getResourceDocRef, getListQuery } =
-    useResourceAPI<Paper>('papers', (uid, paperData) => ({
-      uid: uid,
-      ownerUid: paperData.ownerUid,
-      title: paperData.title,
-      content: paperData.content,
-      createdAt: new Date(paperData.createdAt),
-      modifiedAt: new Date(paperData.modifiedAt)
-    }))
+  const {
+    syncResource,
+    desyncResource,
+    syncListResources,
+    getResourceDocRef,
+    getListQuery,
+    resourceCollection
+  } = useResourceAPI<Paper>('papers', (uid, paperData) => ({
+    uid: uid,
+    ownerUid: paperData.ownerUid,
+    title: paperData.title,
+    content: paperData.content,
+    createdAt: new Date(paperData.createdAt),
+    modifiedAt: new Date(paperData.modifiedAt)
+  }))
 
   // Consume current user store
   const { currentUser } = storeToRefs(useCurrentUserStore())
 
   // Sync list query to singed in user
   watchEffect(() => {
+    if (currentUser.value == undefined) {
+      getListQuery.value = (collection) => query(collection)
+      return
+    }
+
     getListQuery.value = (collection) =>
       query(collection, where('ownerUid', '==', currentUser.value?.uid))
   })
@@ -55,10 +70,26 @@ export const usePaperAPI = () => {
     })
   }
 
+  // Create a paper
+  const createPaper = (title: string, initialContent = '') => {
+    if (currentUser.value == null) throw new Error("Can't create while not logged in")
+
+    const securedData: UploadableEntryComplete<PaperDatabase> = {
+      createdAt: new Date().toJSON(),
+      modifiedAt: new Date().toJSON(),
+      title,
+      content: initialContent,
+      ownerUid: currentUser.value.uid
+    }
+
+    return addDoc(resourceCollection, securedData)
+  }
+
   return {
     syncPaper,
     desyncPaper: desyncResource,
     syncListPapers: syncListResources,
-    getPaperDocRef: getResourceDocRef
+    getPaperDocRef: getResourceDocRef,
+    createPaper
   }
 }

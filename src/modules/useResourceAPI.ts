@@ -15,11 +15,18 @@ export type UploadableEntry<Resource> = Omit<Omit<Partial<Resource>, 'createdAt'
   modifiedAt: string
 }
 
+export type UploadableEntryComplete<Resource> = Omit<Omit<Resource, 'createdAt'>, 'modifiedAt'> & {
+  modifiedAt: string
+  createdAt: string
+}
+
 // Allows for syncing to resources in firestore
 export const useResourceAPI = <Resource>(
   resourceCollection: string,
   extractResource: (resourceUid: string, resourceData: DocumentData) => Resource
 ) => {
+  const resourceCollectionInstance = collection(db, resourceCollection)
+
   // Unsubscribe callbacks
   const unsubscribe = {
     resources: () => {},
@@ -75,7 +82,7 @@ export const useResourceAPI = <Resource>(
 
     // Listen for changes to resources
     unsubscribe.resources = onSnapshot(
-      getListQuery.value(collection(db, resourceCollection)),
+      getListQuery.value(resourceCollectionInstance),
       // Map in a resource fo each doc
       (snapshot) => (resources.value = snapshot.docs.map(snapshotToResource) as Resource[])
     )
@@ -93,5 +100,12 @@ export const useResourceAPI = <Resource>(
     unsubscribe.resource()
   })
 
-  return { syncResource, desyncResource, syncListResources, getResourceDocRef, getListQuery }
+  return {
+    syncResource,
+    desyncResource,
+    syncListResources,
+    getResourceDocRef,
+    getListQuery,
+    resourceCollection: resourceCollectionInstance
+  }
 }

@@ -33,20 +33,20 @@ export const useCurrentUserStore = defineStore('currentUser', () => {
   })
 
   // Log in to a user
-  const login = (email: string, password: string) =>
+  const login = async (email: string, password: string) =>
     signInWithEmailAndPassword(auth, email, password)
 
   // Create a new user
-  const signup = (email: string, password: string, name: string) =>
+  const signup = async (email: string, password: string, name: string) =>
     // Create the user
-    createUserWithEmailAndPassword(auth, email, password).then(({ user }) => {
+    createUserWithEmailAndPassword(auth, email, password).then(async ({ user }) => {
       // Set its name
-      updateProfile(user, { displayName: name })
+      await updateProfile(user, { displayName: name })
 
       const date = new Date().toJSON()
 
       // Set its database entry
-      setDoc(getUserDocRef(user.uid), { name, email, createdAt: date, modifiedAt: date })
+      await setDoc(getUserDocRef(user.uid), { name, email, createdAt: date, modifiedAt: date })
 
       return user
     })
