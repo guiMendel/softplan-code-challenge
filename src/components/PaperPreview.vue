@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { type Highlightable, highlight } from '@/modules/highlight'
 import type { Paper } from '@/types/Paper.interface'
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { usePaperAPI } from '@/modules/usePaperAPI'
+import { useInputStore } from '@/stores/input'
 
 const props = defineProps<{ paper: Paper; highlight?: { title?: Highlightable } }>()
 
@@ -53,6 +55,22 @@ const timestamp = computed(() => {
     props.paper.modifiedAt.getDate()
   ).padStart(2, '0')}`
 })
+
+const showOptions = ref(false)
+
+const disableOptions = () => (showOptions.value = false)
+
+window.addEventListener('click', disableOptions)
+
+onBeforeUnmount(() => window.removeEventListener('click', disableOptions))
+
+const { deletePaper } = usePaperAPI()
+const { getConfirmation } = useInputStore()
+
+const requestDelete = () =>
+  getConfirmation('Delete paper? This cannot be undone.', 'Delete').then((confirmed) => {
+    if (confirmed) deletePaper(props.paper.uid)
+  })
 </script>
 
 <template>
@@ -69,8 +87,12 @@ const timestamp = computed(() => {
     </div>
 
     <!-- Paper options -->
-    <span class="options">
+    <span class="options" @click.stop="showOptions = !showOptions">
       <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
+
+      <div class="options-panel" :class="showOptions && 'active'">
+        <span @click="requestDelete">Delete</span>
+      </div>
     </span>
   </div>
 </template>
@@ -95,6 +117,29 @@ const timestamp = computed(() => {
     width: 1.5rem;
     aspect-ratio: 1/1;
     border-radius: 50%;
+
+    position: relative;
+
+    .options-panel {
+      opacity: 0;
+      position: absolute;
+
+      pointer-events: none;
+
+      transition: all 100ms;
+
+      background-color: $light;
+
+      right: 2rem;
+      padding: 0.6rem 0.9rem;
+
+      border-radius: $border-radius;
+
+      &.active {
+        opacity: 1;
+        pointer-events: unset;
+      }
+    }
   }
 
   &:hover {

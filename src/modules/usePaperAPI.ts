@@ -5,7 +5,7 @@ import {
   type UploadableEntryComplete
 } from './useResourceAPI'
 import { computed, watch, type Ref, watchEffect } from 'vue'
-import { addDoc, collection, query, updateDoc, where } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, query, updateDoc, where } from 'firebase/firestore'
 import { useCurrentUserStore } from '@/stores/currentUser'
 import { storeToRefs } from 'pinia'
 
@@ -89,11 +89,15 @@ export const usePaperAPI = () => {
     return addDoc(resourceCollection, securedData)
   }
 
+  // Delete database entry
+  const deletePaper = async (uid: string) => deleteDoc(getResourceDocRef(uid))
+
   return {
     syncPaper,
     desyncPaper: desyncResource,
     syncListPapers: syncListResources,
     getPaperDocRef: getResourceDocRef,
-    createPaper
+    createPaper,
+    deletePaper
   }
 }
