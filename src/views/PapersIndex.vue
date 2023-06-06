@@ -1,10 +1,29 @@
 <script setup lang="ts">
 import PaperPreview from '@/components/PaperPreview.vue'
 import { usePaperAPI } from '@/modules/usePaperAPI'
+import type { Field } from '@/modules/useUserField'
+import { useInputStore } from '@/stores/input'
+import { ref } from 'vue'
 
 const { syncListPapers, createPaper } = usePaperAPI()
+const { getInput } = useInputStore()
 
 const papers = syncListPapers()
+
+const newPaperTitleField = ref<Field>({
+  name: 'name',
+  value: '',
+  valid: false,
+  validate: (newValue) => {
+    if (newValue.length < 3) return 'Title needs at least 3 characters'
+    if (newValue.length > 20) return 'Too many characters'
+
+    return true
+  }
+})
+
+const newPaper = () =>
+  getInput('New Paper', newPaperTitleField.value).then(([{ value }]) => createPaper(value))
 </script>
 
 <template>
@@ -19,7 +38,9 @@ const papers = syncListPapers()
         </div>
 
         <!-- Create paper button -->
-        <span class="new-paper"><font-awesome-icon :icon="['fas', 'plus']" /> create </span>
+        <span class="new-paper" @click="newPaper"
+          ><font-awesome-icon :icon="['fas', 'plus']" /> create
+        </span>
       </header>
 
       <!-- Index papers -->
