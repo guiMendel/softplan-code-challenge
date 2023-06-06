@@ -20,23 +20,6 @@ const router = useRouter()
       </header>
 
       <div class="papers">
-        <div class="paper" @click="router.push({ name: 'paper' })">
-          <!-- Paper icon -->
-          <span class="icon">🎯</span>
-
-          <div class="text">
-            <!-- Paper title -->
-            <span class="title">Getting started</span>
-
-            <!-- Modified time -->
-            <small>last modified 2 hours ago</small>
-          </div>
-
-          <!-- Paper options -->
-          <span class="options">
-            <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
-          </span>
-        </div>
       </div>
     </div>
   </div>

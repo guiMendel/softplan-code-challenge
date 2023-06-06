@@ -1,8 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { usePaperAPI } from '@/modules/usePaperAPI'
+import { ref, watch } from 'vue'
 
-// Content input by user
-const textContent = ref('')
+// Grab props
+const props = defineProps<{ paperId: string }>()
+
+// Consume papers api
+const { syncPaper } = usePaperAPI()
+
+// Grab referenced paper
+const paper = syncPaper(props.paperId)
+
+// Whenever id changes
+watch(props, ({ paperId }) => syncPaper(paperId, paper))
+
+// // Content input by user
+// const textContent = ref('')
 
 // Whether the panel is toggled
 const panelToggled = ref(false)
@@ -11,9 +24,9 @@ const panelToggled = ref(false)
 </script>
 
 <template>
-  <div id="paper" :class="panelToggled == false && 'panel-hidden'">
+  <div v-if="paper != null" id="paper" :class="panelToggled == false && 'panel-hidden'">
     <!-- Input field -->
-    <textarea autofocus id="input-area" v-model="textContent"></textarea>
+    <textarea autofocus id="input-area" v-model="paper.content"></textarea>
 
     <!-- Draw button -->
     <div id="panel-drawer" @click="panelToggled = !panelToggled">
@@ -23,7 +36,7 @@ const panelToggled = ref(false)
     <!-- Drawable panel -->
     <div class="panel-scroller">
       <!-- Output view -->
-      <div id="output-area" v-html="textContent"></div>
+      <div id="output-area" v-html="paper.content"></div>
     </div>
   </div>
 </template>

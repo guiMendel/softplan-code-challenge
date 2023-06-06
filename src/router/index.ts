@@ -49,9 +49,10 @@ const router = createRouter({
       meta: { requiresAuth: true, hasBackButton: true, noUserPanel: true }
     },
     {
-      path: '/paper',
+      path: '/paper/:paperId',
       name: 'paper',
       component: Paper,
+      props: true,
       meta: { requiresAuth: true, hasBackButton: true, noUserPanel: true }
     }
   ]

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { auth } from '@/api/firebase'
-import InputField from '@/components/InputField.vue'
 import UserProfilePicture from '@/components/UserProfilePicture.vue'
 import { useUserField, type Field } from '@/modules/useUserField'
 import { useInputStore } from '@/stores/input'
@@ -8,7 +7,7 @@ import { useNotificationsStore } from '@/stores/notifications'
 import { useUserStore } from '@/stores/currentUser'
 import type { User } from '@/types/User.interface'
 import { storeToRefs } from 'pinia'
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, watch, watchEffect } from 'vue'
 import { useUserAPI } from '@/modules/useUserAPI'
 
 // Get input methods

@@ -3,6 +3,7 @@ import type { User } from '@/types/User.interface'
 import { computed, ref, watch } from 'vue'
 import UserPreview from '@/components/UserPreview.vue'
 import { useUserAPI } from '@/modules/useUserAPI'
+import type { Highlightable } from '@/modules/highlight'
 
 const { syncAllUsers } = useUserAPI()
 
@@ -11,13 +12,6 @@ const query = ref('')
 
 // Which results to show (on mobile)
 const showResults = ref<'users' | 'papers'>('users')
-
-// Applies highlight marking to the given string
-const highlight = (text: string, startIndex: number, length: number) =>
-  `${text.slice(0, startIndex)}<em class="highlight">${text.slice(
-    startIndex,
-    startIndex + length
-  )}</em>${text.slice(startIndex + length)}`
 
 // Focus on input
 const inputElement = ref<HTMLInputElement | null>(null)
@@ -29,7 +23,7 @@ watch(inputElement, (element) => element?.focus())
 
 interface UserResult {
   user: User
-  highlight?: Partial<User>
+  highlight?: { name?: Highlightable; email?: Highlightable }
 }
 
 // Grab all users
@@ -53,14 +47,21 @@ const filterUser = (user: User, query: string): UserResult | false => {
   let match = user.name.toLowerCase().indexOf(query.toLowerCase())
 
   // Return highlighted name
-  if (match !== -1) return { user, highlight: { name: highlight(user.name, match, query.length) } }
+  if (match !== -1)
+    return {
+      user,
+      highlight: { name: { text: user.name, startIndex: match, length: query.length } }
+    }
 
   // Match on email
   match = user.email.toLowerCase().indexOf(query.toLowerCase())
 
   // Return highlighted email
   if (match !== -1)
-    return { user, highlight: { email: highlight(user.email, match, query.length) } }
+    return {
+      user,
+      highlight: { email: { text: user.email, startIndex: match, length: query.length } }
+    }
 
   return false
 }

@@ -45,8 +45,6 @@ export const useResourceAPI = <Resource>(
     // Reuse resource if provided
     const resource = useResource ?? (ref<Resource | null>(null) as Ref<Resource | null>)
 
-    console.log(uid, useResource?.value, getResourceDocRef(uid))
-
     // Disable last call
     unsubscribe.resource()
 
