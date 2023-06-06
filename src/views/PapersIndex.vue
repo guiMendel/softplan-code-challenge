@@ -85,6 +85,11 @@ const papers = syncListPapers()
       width: 100%;
       flex-direction: column;
       gap: 1rem;
+
+      > * {
+        width: 100%;
+        max-width: 25rem;
+      }
     }
   }
 }
